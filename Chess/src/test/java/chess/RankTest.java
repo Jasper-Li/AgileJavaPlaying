@@ -83,7 +83,7 @@ class RankTest {
         var count = 0;
         assertEquals(count, rank.countValidPieces());
         for (final var check : checks) {
-            rank.placePiece(check.piece, check.column);
+            rank.put(check.piece, check.column);
             ++count;
             assertEquals(count, rank.countValidPieces());
             assertEquals(check.piece, rank.getPiece(check.column));

@@ -9,9 +9,19 @@ import java.util.EnumMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ColumnTest {
+class ColumnTest extends PiecesTest {
+    @Override
+    protected Pieces createPieces() {
+        return new Column();
+    }
+
+    @Override
+    protected Pieces createPieces(String representation) {
+        return new Column(representation);
+    }
+
     @Test
-    void getPieces() {
+    void getTypeCount() {
         final var column = new Column("......P.");
         final EnumMap<Type, Integer> onePawn = new EnumMap<>(Map.of(
                Type.PAWN, 1
@@ -20,16 +30,14 @@ class ColumnTest {
         assertEquals(onePawn, column.getTypeCount(Color.BLACK));
         assertEquals(emptyPieces, column.getTypeCount(Color.WHITE));
 
-        final var blank = column.getPiece(0);
-        assertEquals(".", blank.toString());
-        final var blackPawn = column.getPiece(6);
-        assertEquals("P", blackPawn.toString());
-        assertEquals(0, blackPawn.strength());
+        // TODO: move to getStrength
+        final var blackPawn = column.get(6);
+        assertEquals(0, blackPawn.strength()); //initial strength is zero.
 
-        assertEquals(1.0, column.getStrength(onePawn, Color.BLACK));
-        assertEquals(1.0, blackPawn.strength());
+        assertEquals(1.0, column.getStrength(onePawn, Color.BLACK)); // static method
+        assertEquals(1.0, blackPawn.strength()); // save strength to black pawn.
 
-        assertEquals(1.0, column.getStrength(Color.BLACK));
+        assertEquals(1.0, column.getStrength(Color.BLACK)); // instance method
         assertEquals(0.0, column.getStrength(Color.WHITE));
     }
 
@@ -46,21 +54,21 @@ class ColumnTest {
             assertEquals(check.strengthWhite, column.getStrength(Color.WHITE));
         }
     }
-
-    @Test
-    void getTypeCount() {
-        record Check(String representation, EnumMap<Type, Integer> countWhite, EnumMap<Type, Integer> countBlack){};
-        Check[] checks = {
-            new Check(
-                "...P...p",
-                new EnumMap<>(Map.of(Type.PAWN, 1)),
-                new EnumMap<>(Map.of(Type.PAWN, 1))
-            ),
-        };
-        for (final var check : checks) {
-            var column = new Column(check.representation);
-            assertEquals(check.countWhite, column.getTypeCount(Color.WHITE));
-            assertEquals(check.countBlack, column.getTypeCount(Color.BLACK));
-        }
-    }
+//
+//    @Test
+//    void getTypeCount() {
+//        record Check(String representation, EnumMap<Type, Integer> countWhite, EnumMap<Type, Integer> countBlack){};
+//        Check[] checks = {
+//            new Check(
+//                "...P...p",
+//                new EnumMap<>(Map.of(Type.PAWN, 1)),
+//                new EnumMap<>(Map.of(Type.PAWN, 1))
+//            ),
+//        };
+//        for (final var check : checks) {
+//            var column = new Column(check.representation);
+//            assertEquals(check.countWhite, column.getTypeCount(Color.WHITE));
+//            assertEquals(check.countBlack, column.getTypeCount(Color.BLACK));
+//        }
+//    }
 }

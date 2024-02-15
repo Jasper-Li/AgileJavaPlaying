@@ -10,30 +10,34 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Board {
-    public static final int RANK_COUNT = 8;
-    public static final int COLUMN_COUNT = 8;
+    public static final int GRIDS_COUNT_PER_LINE = 8;
     public static final RankIndex  WHITE_BACK_RANK_INDEX_ON_BOARD = RankIndex.R1;
     public static final RankIndex WHITE_SECOND_RANK_INDEX_ON_BOARD = RankIndex.R2;
     public static final RankIndex BLACK_SECOND_RANK_INDEX_ON_BOARD = RankIndex.R7;
     public static final RankIndex BLACK_BACK_RANK_INDEX_ON_BOARD = RankIndex.R8;
-    private final List<Rank> ranks = new ArrayList<Rank>(RANK_COUNT);
+    private final List<Rank> ranks = new ArrayList<Rank>(GRIDS_COUNT_PER_LINE);
     public Board() {
-        for (int i = 0; i < RANK_COUNT; ++i) {
+        for (int i = 0; i < GRIDS_COUNT_PER_LINE; ++i) {
             ranks.add(new Rank());
         }
     }
 
     public Board(String boardRepresentation){
-        String[] lines = boardRepresentation.split("\\r?\n");
-        var count = lines.length;
-        var valid_count = Math.min(count, RANK_COUNT);
-        for(int i = valid_count - 1; i >=0; --i) {
-            ranks.add(new Rank(lines[i]));
+    }
+    public void set(String boardRepresentation) {
+        final String[] lines = boardRepresentation.split("\\r?\n");
+        final var linesCount = lines.length;
+        if(!(linesCount == GRIDS_COUNT_PER_LINE || linesCount == GRIDS_COUNT_PER_LINE + 1)) {
+            throw new RuntimeException(STR."wrong lines count: \{linesCount} of boardRepresentation:\n\{boardRepresentation}");
+        }
+        for(int i = GRIDS_COUNT_PER_LINE - 1; i >=0; --i) {
+            var rank = ranks.get(i);
+            rank.set(lines[i]);
         }
     }
     public Board initialize() {
         var rankIndex = RankIndex.R1;
-        for(int i = 0; i < RANK_COUNT; ++i) {
+        for(int i = 0; i < GRIDS_COUNT_PER_LINE; ++i) {
             switch (rankIndex) {
                 case RankIndex.R1-> {
                    ranks.set(i, new Rank(Color.WHITE, new BackRankArrangement()));
@@ -53,20 +57,6 @@ public class Board {
         }
         return this;
     }
-    public int countRanks() {
-        return ranks.size();
-    }
-    public int countAllPieces() {
-        int count = 0;
-        for (var rank : ranks) {
-            count += rank.countValidPieces();
-        }
-        return count;
-    }
-    public Rank getRank(RankIndex rank) {
-        return ranks.get(rank.getInternalIndex());
-    }
-
     public int count(Piece piece) {
         int count = 0;
         for (var rank : ranks) {
@@ -75,18 +65,13 @@ public class Board {
         return count;
     }
 
-    public Piece getPieceBy(Location location) {
-        final var column = location.column();
-        final var rank = location.rank();
-        return getRank(rank).getPiece(column);
+    public int countAllPieces() {
+        int count = 0;
+        for (var rank : ranks) {
+            count += rank.countValidPieces();
+        }
+        return count;
     }
-
-    public void placePiece(Piece piece, Location location) {
-        final var column = location.column();
-        final var rank = location.rank();
-        getRank(rank).placePiece(piece, column);
-    }
-
     public Column getColumn(ColumnIndex columnIndex) {
         List<Piece> pieces = new ArrayList<Piece>();
         for (var rank : ranks) {
@@ -94,17 +79,14 @@ public class Board {
         }
         return new Column(pieces);
     }
+    public Rank getRank(RankIndex rank) {
+        return ranks.get(rank.getInternalIndex());
+    }
 
-    public double getStrength(Color color) {
-        double points = 0;
-        var columnIndex = ColumnIndex.A;
-        for(int i =0 ; i< COLUMN_COUNT; ++i)  {
-            final var column = getColumn(columnIndex);
-            final var point = column.getStrength(color);
-            points += point;
-            columnIndex = columnIndex.increment();
-        }
-        return points;
+    public Piece get(Location location) {
+        final var column = location.column();
+        final var rank = location.rank();
+        return getRank(rank).getPiece(column);
     }
     public List<Piece> getPieces(Color color){
         List<Piece> pieces = new LinkedList<>();
@@ -116,6 +98,25 @@ public class Board {
         return pieces;
     }
 
+
+    public void put(Piece piece, Location location) {
+        final var column = location.column();
+        final var rank = location.rank();
+        getRank(rank).put(piece, column);
+    }
+
+
+    public double getStrength(Color color) {
+        double points = 0;
+        var columnIndex = ColumnIndex.A;
+        for(int i = 0; i< GRIDS_COUNT_PER_LINE; ++i)  {
+            final var column = getColumn(columnIndex);
+            final var point = column.getStrength(color);
+            points += point;
+            columnIndex = columnIndex.increment();
+        }
+        return points;
+    }
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder();
@@ -140,9 +141,9 @@ public class Board {
     public void moveKing(Location start, Direction direction) {
         var newLocation = start.moveKing(direction);
         if(newLocation != start) {
-            var piece = getPieceBy(start);
-            placePiece(piece, newLocation);
-            placePiece(new Piece(), start);
+            var piece = get(start);
+            put(piece, newLocation);
+            put(new Piece(), start);
         }
     }
 

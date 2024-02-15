@@ -11,9 +11,8 @@ public class Printer {
     }
 
     public static String printByStringConcatenation(Board board) {
-        if(board.countRanks() != Board.RANK_COUNT) return "";
-        String result = new String();
-        for(int i = Board.RANK_COUNT; i > 0; --i) {
+        String result = "";
+        for(int i = Board.GRIDS_COUNT_PER_LINE; i > 0; --i) {
             var rankIndex = RankIndex.of((char)('0' + i));
             var rank = board.getRank(rankIndex).toString();
             var line = StringUtil.appendNewLine(rank);

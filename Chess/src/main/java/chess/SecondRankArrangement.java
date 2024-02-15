@@ -8,6 +8,6 @@ import java.util.List;
 public class SecondRankArrangement implements  Arrangement{
     @Override
     public List<Type> names() {
-        return Collections.nCopies(Board.COLUMN_COUNT, Type.PAWN);
+        return Collections.nCopies(Board.GRIDS_COUNT_PER_LINE, Type.PAWN);
     }
 }

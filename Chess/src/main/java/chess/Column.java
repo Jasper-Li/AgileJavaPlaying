@@ -2,31 +2,26 @@ package chess;
 
 import pieces.Color;
 import pieces.Piece;
-import pieces.Pieces;
 import pieces.Type;
+
+import static chess.Board.GRIDS_COUNT_PER_LINE;
 import static pieces.Type.*;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-public class Column {
-    private final List<Piece> pieces;
+public class Column extends Pieces {
 
     Column(List<Piece> pieces) {
-        this.pieces = pieces;
+        this.pieces.clear();
+        this.pieces.addAll(pieces);
     }
-
+    Column(){
+        super();
+    }
     public Column(String representation) {
-        pieces  = Pieces.createFrom(representation);
-    }
-
-
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof Column that) {
-            return pieces.equals(that.pieces);
-        }
-        return false;
+       super(representation);
     }
 
     public EnumMap<Type, Integer> getTypeCount(Color color) {
@@ -48,6 +43,7 @@ public class Column {
         }
         return point;
     }
+    // TODO: move to Game
     public double getStrength(EnumMap<Type, Integer> piecesCount, Color color) {
         var points = 0.0;
         for(var piece : this.pieces) {
@@ -61,13 +57,5 @@ public class Column {
     public double getStrength(Color color) {
         var typeCount = getTypeCount(color);
         return getStrength(typeCount, color);
-    }
-    /**
-     *
-     * @param index, count from 0.
-     * @return piece at index.
-     */
-    Piece getPiece(int index) {
-        return pieces.get(index);
     }
 }

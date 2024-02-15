@@ -47,12 +47,10 @@ public class BoardTest {
     }
     @Test
     void create() {
-        assertEquals(Board.RANK_COUNT, board.countRanks());
         assertEquals(0, board.countAllPieces());
 
         Piece.resetPiecesCount(0, 0);
         board.initialize();
-        out.println(board);
         Rank rank2 = board.getRank(Board.WHITE_SECOND_RANK_INDEX_ON_BOARD);
         assertEquals("pppppppp", rank2.toString());
         assertEquals(
@@ -117,8 +115,8 @@ public class BoardTest {
         board.initialize();
         var blackRook = new chess.Location("a8");
         var whiteQueen = new chess.Location("e1");
-        assertEquals(new Piece(Color.BLACK, Type.ROOK), board.getPieceBy(blackRook));
-        assertEquals(new Piece(Color.WHITE, Type.KING), board.getPieceBy(whiteQueen));
+        assertEquals(new Piece(Color.BLACK, Type.ROOK), board.get(blackRook));
+        assertEquals(new Piece(Color.WHITE, Type.KING), board.get(whiteQueen));
     }
 
     @Test
@@ -135,10 +133,10 @@ public class BoardTest {
         int pieceCount = 0;
         assertEquals(pieceCount, board.countAllPieces());
         for (var check: checks) {
-            board.placePiece(check.piece(), check.location());
+            board.put(check.piece(), check.location());
             ++pieceCount;
             assertEquals(pieceCount, board.countAllPieces());
-            assertEquals(check.piece(), board.getPieceBy(check.location()));
+            assertEquals(check.piece(), board.get(check.location()));
         }
 
         final var boardRepresentation =
@@ -171,10 +169,10 @@ public class BoardTest {
         final Column columnExpected = new Column("......P.");
         assertEquals(columnExpected, column0);
 
-        final var blackKing = board.getPieceBy(new Location("b8"));
+        final var blackKing = board.get(new Location("b8"));
         assertEquals("K", blackKing.toString());
         assertEquals(0.0, blackKing.strength());
-        final var blackBishop = board.getPieceBy(new Location("d7"));
+        final var blackBishop = board.get(new Location("d7"));
         assertEquals("B", blackBishop.toString());
         assertEquals(0.0,blackBishop.strength());
 
@@ -452,7 +450,7 @@ public class BoardTest {
         for (final var checkMoving : checkMovings) {
             for(final var nextPosition : checkMoving.nextPositions) {
                 for (final var direction : nextPosition.directions) {
-                    var board = new Board(checkMoving.boardStart);
+                   var board = new Board(checkMoving.boardStart);
                     board.moveKing(checkMoving.fromHere, direction);
                     assertEquals(new Board(nextPosition.boardAfter), board, STR."Failed on testing direction \{direction} from \{checkMoving.fromHere} of board:\n\{checkMoving.boardStart}" );
                 }

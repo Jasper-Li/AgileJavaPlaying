@@ -2,19 +2,20 @@ package chess;
 
 import pieces.Color;
 import pieces.Piece;
-import pieces.Pieces;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static chess.Board.GRIDS_COUNT_PER_LINE;
+
 public class Rank {
-    private List<Piece> pieces = new ArrayList<Piece>();
+    private final List<Piece> pieces = new ArrayList<Piece>(GRIDS_COUNT_PER_LINE);
 
     /**
      * blank rank uses blank Piece.
      */
     public Rank() {
-        for(int i = 0; i < Board.COLUMN_COUNT; ++i) {
+        for(int i = 0; i < GRIDS_COUNT_PER_LINE; ++i) {
             pieces.add(new Piece());
         }
     }
@@ -22,13 +23,20 @@ public class Rank {
     public Rank(Color color, Arrangement arrangement) {
         for(var name : arrangement.names()) {
             pieces.add(new Piece(color, name));
-            if(pieces.size() > Board.COLUMN_COUNT) break;
+            if(pieces.size() > GRIDS_COUNT_PER_LINE) break;
         }
     }
 
     public Rank(String representation) {
-        this.pieces  = Pieces.createFrom(representation);
+        // TODO: use set
+
     }
+    public void set(String rankRepresentation) {
+    }
+    public void put(Piece piece, ColumnIndex column) {
+        pieces.set(column.getInternalIndex(), piece);
+    }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -78,16 +86,6 @@ public class Rank {
         return count;
     }
 
-
-    /**
-     *
-     * @param column, count from 0.
-     * @return
-     */
-    public void placePiece(Piece piece, ColumnIndex column) {
-        pieces.set(column.getInternalIndex(), piece);
-    }
-
     public List<Piece> getPieces(Color color) {
         List<Piece> pieces = new ArrayList<>();
         for(final var piece : this.pieces){
@@ -97,4 +95,5 @@ public class Rank {
         }
         return  pieces;
     }
+
 }
