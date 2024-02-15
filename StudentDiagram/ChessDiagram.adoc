@@ -1,0 +1,42 @@
+:hardbreaks-option:
+:imagesdir: _images
+
+== Lesson 5
+[plantuml, target=chess_interface]
+----
+@startuml
+enum Color{}
+enum Type{}
+class Piece{}
+
+interface Arrangement{}
+class BackRankArrangement implements Arrangement{}
+class SecondArrangement implements Arrangement{}
+
+Class Pieces{}
+Class Rank{}
+Class Column{}
+Class Location{}
+
+Class Board{}
+Class Printer{}
+
+Piece -down-> Color
+Piece -down-> Type
+
+
+Pieces --> "*" Piece
+Column --> "*" Piece
+Rank --> "*" Piece
+Rank --> Arrangement
+
+Board --> "*" Rank
+Board --> "*" Column
+Board --> Location
+Board --> "*" Piece
+
+Printer --> Board
+
+
+@enduml
+----

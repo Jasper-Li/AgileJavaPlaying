@@ -1,0 +1,77 @@
+:hardbreaks-option:
+:imagesdir: _images
+
+== Lesson 5
+[plantuml, target=interface]
+----
+@startuml
+interface Comparable<CourseSession> {
+int compareTo(CourseSession o);
+}
+class Student{}
+class LocalDate{}
+class CourseSession implements Comparable {
+String department
+String number
+}
+class ArrayList<Student>{}
+class RosterReport{}
+class CourseReport{
+String text()
+}
+
+RosterReport --> CourseSession
+RosterReport --> Student
+CourseSession -right-> "*" Student
+CourseSession -down-> ArrayList
+CourseSession --> LocalDate
+CourseReport --> "*" CourseSession
+
+@enduml
+----
+
+== Lesson 4
+
+[plantuml, target=stereotype]
+----
+@startuml
+class Math <<utility>> {
+PI
+E
+abs()
+acos()
+asin()
+}
+@enduml
+----
+
+== Lesson 3
+[plantuml, target=addRosterReport]
+----
+@startuml
+class Student{}
+class CourseSession{}
+class ArrayList<Student>{}
+class RosterReport{}
+
+RosterReport --> CourseSession
+RosterReport --> Student
+CourseSession -right-> "*" Student
+CourseSession -down-> ArrayList
+
+@enduml
+----
+
+== Lesson 2
+[plantuml, target=addArrayList]
+----
+@startuml
+class Student{}
+class CourseSession{}
+class ArrayList<Student>{}
+
+CourseSession -right-> "*" Student
+CourseSession -down-> ArrayList
+
+@enduml
+----

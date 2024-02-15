@@ -1,0 +1,30 @@
+@startuml
+class Student{}
+interface GradingStrategy{}
+class RegularGradingStrategy implements GradingStrategy{}
+class HonoursGradingStrategy implements GradingStrategy{}
+class EliteGradingStrategy implements GradingStrategy{}
+enum Grade{
+ A B C D F
+}
+
+class LocalDate{}
+class CourseSession {}
+class ArrayList<Student>{}
+class RosterReport{}
+class CourseReport{
+}
+
+Student -right-> GradingStrategy
+Student -right-> Grade
+
+Comparable ()- CourseSession
+CourseSession -right-> "*" Student
+CourseSession -down-> ArrayList
+CourseSession --> LocalDate
+CourseReport --> "*" CourseSession
+
+RosterReport --> CourseSession
+RosterReport --> Student
+
+@enduml

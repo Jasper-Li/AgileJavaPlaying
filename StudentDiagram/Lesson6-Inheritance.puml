@@ -1,0 +1,12 @@
+@startuml
+class GradingStrategyBasic{
+    {static} basicGradePointsFor(grade: Grade): int
+}
+interface GradingStrategy {
+    getGradePointsFor(grade: Grade): int
+}
+
+class GradingStrategyRegular extends GradingStrategyBasic implements  GradingStrategy
+class GradingStrategyHonor extends GradingStrategyBasic implements  GradingStrategy
+
+@enduml

@@ -1,0 +1,95 @@
+:hardbreaks:
+:source-highlighter: rouge
+
+.Abstract Class
+[plantuml, gradingStrategyInheritage]
+----
+@startuml
+interface GradingStrategy
+class GradingStrategyRegular implements GradingStrategy
+class GradingStrategyHonour extends GradingStrategyRegular
+class GradingStrategyElite implements GradingStrategy
+@enduml
+----
+
+.Summer Course Sessions
+[plantuml, summerCourseSession]
+----
+@startuml
+package "sis.studentinfo" {
+    class CourseSession
+}
+package "sis.summer" {
+    class SummerCourseSession extends "sis.studentinfo.CourseSession"{
+        getEndDate(): LocalDate
+    }
+}
+@enduml
+----
+
+.Subcontracting Main
+[plantuml, SubcontractingMain]
+----
+@startuml
+package "sis.studentinfo" {
+    abstract class Session {
+        + Session(department, number, date)
+        + compareTo(that: Session): int
+        # {abstract} int getSessionLength()
+        + getEndDate(): LocalDate
+        + setCredits(credits: int)
+        + enroll(student)
+    }
+    class CourseSession extends Session {
+        + CourseSession(department, number, date)
+        # int getSessionLength()
+        + resetCount(count: int)
+        + getCount(): int
+    }
+}
+package "sis.summer" {
+    class SummerCourseSession extends "sis.studentinfo.Session"{
+        + SummerCourseSession(department, number, date)
+        # int getSessionLength()
+    }
+}
+@enduml
+----
+
+.Subcontracting Test
+[plantuml, SubcontractingTest]
+----
+@startuml
+package "sis.studentinfo" {
+    abstract class SessionTest {
+        setUp()
+        # {abstract} createSession(): Session
+        create()
+        getSessionLength();
+        comparable()
+        enrollStudent()
+
+    }
+    class CourseSessionTest extends SessionTest {
+        # createSession(): Session
+        getEndDate()
+        count()
+    }
+}
+package "sis.summer" {
+    class SummerCourseSessionTest extends "sis.studentinfo.SessionTest"{
+        # createSession(): Session
+        getEndDate()
+    }
+}
+@enduml
+----
+
+////
+.
+[plantuml, name]
+----
+@startuml
+@enduml
+----
+////
