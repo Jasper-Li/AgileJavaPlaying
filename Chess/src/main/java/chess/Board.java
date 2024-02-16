@@ -23,6 +23,7 @@ public class Board {
     }
 
     public Board(String boardRepresentation){
+        set(boardRepresentation);
     }
     public void set(String boardRepresentation) {
         final String[] lines = boardRepresentation.split("\\r?\n");
@@ -30,32 +31,41 @@ public class Board {
         if(!(linesCount == GRIDS_COUNT_PER_LINE || linesCount == GRIDS_COUNT_PER_LINE + 1)) {
             throw new RuntimeException(STR."wrong lines count: \{linesCount} of boardRepresentation:\n\{boardRepresentation}");
         }
-        for(int i = GRIDS_COUNT_PER_LINE - 1; i >=0; --i) {
-            var rank = ranks.get(i);
-            rank.set(lines[i]);
+        for(int linesIndex = GRIDS_COUNT_PER_LINE - 1; linesIndex >=0; --linesIndex) {
+            if(ranks.size() == GRIDS_COUNT_PER_LINE) {
+                ranks.get(linesIndex).set(lines[linesIndex]);
+            } else {
+                ranks.add(new Rank(lines[linesIndex]));
+            }
         }
     }
     public Board initialize() {
         var rankIndex = RankIndex.R1;
         for(int i = 0; i < GRIDS_COUNT_PER_LINE; ++i) {
+            final var rank = ranks.get(i);
             switch (rankIndex) {
                 case RankIndex.R1-> {
-                   ranks.set(i, new Rank(Color.WHITE, new BackRankArrangement()));
+                   rank.set(Color.WHITE, new BackRankArrangement());
                 }
                 case RankIndex.R2-> {
-                    ranks.set(i, new Rank(Color.WHITE, new SecondRankArrangement()));
+                    rank.set(Color.WHITE, new SecondRankArrangement());
                 }
                 case RankIndex.R7-> {
-                    ranks.set(i, new Rank(Color.BLACK, new SecondRankArrangement()));
+                    rank.set(Color.BLACK, new SecondRankArrangement());
                 }
                 case RankIndex.R8-> {
-                    ranks.set(i, new Rank(Color.BLACK, new BackRankArrangement()));
+                    rank.set(Color.BLACK, new BackRankArrangement());
                 }
-                default -> ranks.set(i, new Rank());
+                default -> rank.set(Rank.BLANK_REPRESENTATION);
             };
             rankIndex = rankIndex.increment();
         }
         return this;
+    }
+    public void initializeBlankBoard() {
+        for(final var rank : ranks){
+            rank.set(Rank.BLANK_REPRESENTATION);
+        }
     }
     public int count(Piece piece) {
         int count = 0;
@@ -72,10 +82,15 @@ public class Board {
         }
         return count;
     }
+    public Piece get(Location location) {
+        final var column = location.column();
+        final var rank = location.rank();
+        return getRank(rank).get(column);
+    }
     public Column getColumn(ColumnIndex columnIndex) {
         List<Piece> pieces = new ArrayList<Piece>();
         for (var rank : ranks) {
-            pieces.add(rank.getPiece(columnIndex));
+            pieces.add(rank.get(columnIndex));
         }
         return new Column(pieces);
     }
@@ -83,18 +98,12 @@ public class Board {
         return ranks.get(rank.getInternalIndex());
     }
 
-    public Piece get(Location location) {
-        final var column = location.column();
-        final var rank = location.rank();
-        return getRank(rank).getPiece(column);
-    }
-    public List<Piece> getPieces(Color color){
-        List<Piece> pieces = new LinkedList<>();
+    public Pieces getPieces(Color color){
+        var pieces = new Pieces();
         for (final var rank : ranks)  {
             final var some = rank.getPieces(color);
-            pieces.addAll(some);
+            pieces.append(some);
         }
-        pieces.sort(Collections.reverseOrder());
         return pieces;
     }
 
@@ -102,7 +111,7 @@ public class Board {
     public void put(Piece piece, Location location) {
         final var column = location.column();
         final var rank = location.rank();
-        getRank(rank).put(piece, column);
+        getRank(rank).put(column, piece);
     }
 
 

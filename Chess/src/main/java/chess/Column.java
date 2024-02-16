@@ -43,8 +43,8 @@ public class Column extends Pieces {
         }
         return point;
     }
-    // TODO: move to Game
-    public double getStrength(EnumMap<Type, Integer> piecesCount, Color color) {
+    public double getStrength(Color color) {
+        final var piecesCount = getTypeCount(color);
         var points = 0.0;
         for(var piece : this.pieces) {
             if (piece.isEmpty() || piece.color() != color)  continue;
@@ -53,9 +53,5 @@ public class Column extends Pieces {
             points += point;
         }
         return points;
-    }
-    public double getStrength(Color color) {
-        var typeCount = getTypeCount(color);
-        return getStrength(typeCount, color);
     }
 }

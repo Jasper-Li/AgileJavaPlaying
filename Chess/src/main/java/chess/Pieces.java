@@ -10,11 +10,7 @@ import static chess.Board.GRIDS_COUNT_PER_LINE;
 
 public class Pieces {
     protected final List<Piece> pieces = new ArrayList<>(GRIDS_COUNT_PER_LINE);
-    Pieces() {
-//        for(int i = 0; i < GRIDS_COUNT_PER_LINE; ++i) {
-//            pieces.add(new Piece());
-//        }
-    }
+    Pieces() {}
     Pieces(String representation){
         this();
         set(representation);
@@ -92,5 +88,13 @@ public class Pieces {
             }
         }
         return  pieces;
+    }
+
+    public void append(Pieces some) {
+        this.pieces.addAll(some.pieces);
+    }
+
+    public int size() {
+        return pieces.size();
     }
 }

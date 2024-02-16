@@ -18,25 +18,26 @@ public class PrinterTest {
 
     private static String getBoardRepresentation() {
         final String boardLookExpectWin = """
-                RNBQKBNR\r
-                PPPPPPPP\r
-                ........\r
-                ........\r
-                ........\r
-                ........\r
-                pppppppp\r
-                rnbqkbnr\r
-                """;
-        final String boardLookExpectOther = """
-                RNBQKBNR
-                PPPPPPPP
-                ........
-                ........
-                ........
-                ........
-                pppppppp
-                rnbqkbnr
-                """;
+            RNBQKBNR\r
+            PPPPPPPP\r
+            ........\r
+            ........\r
+            ........\r
+            ........\r
+            pppppppp\r
+            rnbqkbnr\r
+            """;
+        final String boardLookExpectOther =
+            """
+            RNBQKBNR
+            PPPPPPPP
+            ........
+            ........
+            ........
+            ........
+            pppppppp
+            rnbqkbnr
+            """;
         final String boardLookExpect = util.System.isWindows() ? boardLookExpectWin : boardLookExpectOther;
         return boardLookExpect;
     }

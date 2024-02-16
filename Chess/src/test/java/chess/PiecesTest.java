@@ -45,6 +45,19 @@ public class PiecesTest {
             assertEquals(check, pieces2.toString());
         }
     }
+    @Test
+    void constructorFromPrettyString() {
+        record Check(String prettyString, String normalString){}
+        Check[] checks = {
+            new Check(". K R . . . . . \r", ".KR....."),
+            new Check(". K R . . . . . 4", ".KR....."),
+            new Check("r n b q k b n r ", "rnbqkbnr"),
+            new Check("r n b q k b n r", "rnbqkbnr"),
+        };
+        for(final var check: checks){
+            assertEquals(new Pieces(check.prettyString), new Pieces(check.normalString));
+        }
+    }
 
     @Test
     void put() {
@@ -170,4 +183,35 @@ public class PiecesTest {
             assertEquals(createPieces(check.black), pieces.getPieces(BLACK));
         }
     }
+
+    @Test
+    void append() {
+        record Check(String start, String some, String after){}
+        final Check[] checks = {
+            new Check("", "pp", "pp"),
+            new Check("pp", "", "pp"),
+            new Check("pp", "kn", "ppkn")
+        };
+        for (final var check : checks) {
+            final var start = new Pieces(check.start);
+            final var some = new Pieces(check.some);
+            start.append(some);
+            final var after = new Pieces(check.after);
+            assertEquals(after, start);
+        }
+    }
+
+    @Test
+    void toPrettyString() {
+        record Check(String pieces, String prettyString){}
+        Check[] checks = {
+            new Check(".KR.....", ". K R . . . . . "),
+            new Check("rnbqkbnr", "r n b q k b n r "),
+            new Check("pppppppp", "p p p p p p p p "),
+        };
+        for(final var check: checks){
+            assertEquals(check.prettyString, new Pieces(check.pieces).toPrettyString());
+        }
+    }
+
 }

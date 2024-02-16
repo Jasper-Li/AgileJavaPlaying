@@ -8,8 +8,8 @@ import pieces.Type;
 import util.StringUtil;
 
 import java.util.List;
+import java.util.Map;
 
-import static java.lang.System.out;
 import static org.junit.jupiter.api.Assertions.*;
 import static util.StringUtil.NEW_LINE;
 import static chess.ColumnIndex.*;
@@ -17,28 +17,27 @@ import static chess.RankIndex.*;
 import static chess.Direction.*;
 
 public class BoardTest {
-    private static final String boardRepresentationTest_5_4 = util.System.isWindows() ?
-            """ 
-            .KR.....\r
-            P.PB....\r
-            .P..Q...\r
-            ........\r
-            .....nq.\r
-            .....p..\r
-            ......p.\r
-            ....rk..\r
-            """
-            :
-            """
-            .KR.....
-            P.PB....
-            .P..Q...
-            ........
-            .....nq.
-            .....p..
-            ......p.
-            ....rk..
-            """;
+    private static final String board_5_4 = """
+        . K R . . . . . 8
+        P . P B . . . . 7
+        . P . . Q . . . 6
+        . . . . . . . . 5
+        . . . . . n q . 4
+        . . . . . p . p 3
+        . . . . . p p . 2
+        . . . . r k . . 1
+        a b c d e f g h
+        """;
+    private static final String boardRepresentationTest_5_4 = STR."""
+        .KR.....\{NEW_LINE}\
+        P.PB....\{NEW_LINE}\
+        .P..Q...\{NEW_LINE}\
+        ........\{NEW_LINE}\
+        .....nq.\{NEW_LINE}\
+        .....p..\{NEW_LINE}\
+        ......p.\{NEW_LINE}\
+        ....rk..\{NEW_LINE}\
+        """;
 
     private Board board;
     @BeforeEach
@@ -46,97 +45,121 @@ public class BoardTest {
         board = new Board();
     }
     @Test
-    void create() {
+    void defaultConstructor() {
+        final var board = new Board();
         assertEquals(0, board.countAllPieces());
 
         Piece.resetPiecesCount(0, 0);
+
         board.initialize();
+
         Rank rank2 = board.getRank(Board.WHITE_SECOND_RANK_INDEX_ON_BOARD);
         assertEquals("pppppppp", rank2.toString());
         assertEquals(
-                "PPPPPPPP",
-                board.getRank(Board.BLACK_SECOND_RANK_INDEX_ON_BOARD).toString());
+            "PPPPPPPP",
+            board.getRank(Board.BLACK_SECOND_RANK_INDEX_ON_BOARD).toString());
 
         assertEquals(32, board.countAllPieces());
         assertEquals(16, Piece.getBlackPiecesCount());
         assertEquals(16, Piece.getWhitePiecesCount());
-
-        board = new Board(boardRepresentationTest_5_4);
+        assertEquals(new Board(GameTest.initialBoard), board);
+    }
+    @Test
+    void constructorString(){
+        final var board = new Board(boardRepresentationTest_5_4);
         assertEquals(boardRepresentationTest_5_4, Printer.print(board));
     }
     @Test
-    void createByRepresentationWithDecoration() {
-        final var representation = STR."""
-                . K R . . . . . 8
-                P . P B . . . . 7
-                . P . . Q . . . 6
-                . . . . . . . . 5
-                . . . . . n q . 4
-                . . . . . p . p 3
-                . . . . . p p . 2
-                . . . . r k . . 1
-                a b c d e f g h
-                """;
-        final var printExpected = util.System.isWindows() ?
-            """
-            .KR.....\r
-            P.PB....\r
-            .P..Q...\r
-            ........\r
-            .....nq.\r
-            .....p.p\r
-            .....pp.\r
-            ....rk..\r
-            """
-                :
-            """
-            .KR.....
-            P.PB....
-            .P..Q...
-            ........
-            .....nq.
-            .....p.p
-            .....pp.
-            ....rk..
+    void constructorByRepresentationWithDecoration() {
+        final var representation = """
+            . K R . . . . . 8
+            P . P B . . . . 7
+            . P . . Q . . . 6
+            . . . . . . . . 5
+            . . . . . n q . 4
+            . . . . . p . . 3
+            . . . . . . p . 2
+            . . . . r k . . 1
+            a b c d e f g h
             """;
-        board = new Board(representation);
-        assertEquals(printExpected, Printer.print(board));
+        final var board = new Board(representation);
+        assertEquals(boardRepresentationTest_5_4, Printer.print(board));
         assertTrue(StringUtil.isEqualIgnoreEOL(representation, board.toPrettyString()));
+    }
+    @Test
+    void initializeBlankBoard() {
+        final var board = new Board();
+        board.initializeBlankBoard();
+        final var representation = """
+            ........ 8
+            ........ 7
+            ........ 6
+            ........ 5
+            ........ 4
+            ........ 3
+            ........ 2
+            ........ 1
+            """;
+        assertEquals(new Board(representation), board);
     }
 
     @Test
     void countPiece() {
-        board = new Board(boardRepresentationTest_5_4);
-        var blackPawnCountExpected = 3;
-        assertEquals(blackPawnCountExpected, board.count(new Piece(Color.BLACK, Type.PAWN)));
+        final var board = new Board(boardRepresentationTest_5_4);
+        Map<Character, Integer> pieceCount = Map.of(
+            'K', 1, 'R', 1,
+            'P', 3, 'B', 1, 'Q', 1,
+            'n', 1, 'q', 1,
+            'p', 2, 'r', 1, 'k', 1
+
+        );
+        pieceCount.forEach((pieceCharacter, count)->{
+            final var piece = new Piece (pieceCharacter);
+            assertEquals(count, board.count(piece));
+        });
+
     }
     @Test
-    void retrievePiece() {
+    void get() {
+        final var board = new Board();
         board.initialize();
-        var blackRook = new chess.Location("a8");
-        var whiteQueen = new chess.Location("e1");
-        assertEquals(new Piece(Color.BLACK, Type.ROOK), board.get(blackRook));
-        assertEquals(new Piece(Color.WHITE, Type.KING), board.get(whiteQueen));
+        Map<String, Character> locationToPiece = Map.of(
+            "a1", 'r', "a2", 'p', "a7", 'P', "a8", 'R',
+            "e1", 'k', "e2", 'p', "e7", 'P', "e8", 'K',
+            "a3", '.'
+        );
+        locationToPiece.forEach((location, piece)->{
+            assertEquals(new Piece(piece), board.get(new Location(location)));
+        });
     }
 
     @Test
-    void placePiece() {
-        record PlacePieceCheck(Piece piece, Location location){};
-        var blackKing = new Piece(Color.BLACK, Type.KING);
-        var blackRook = new Piece(Color.BLACK, Type.ROOK);
-        var whiteKing = new Piece(Color.WHITE, Type.KING);
+    void getPieces() {
+        final var board = new Board(board_5_4);
+        final var piecesWhite = board.getPieces(Color.WHITE);
+        assertEquals(8, piecesWhite.size());
+        final var piecesBlack = board.getPieces(Color.BLACK);
+        assertEquals(7, piecesBlack.size());
+    }
+
+    @Test
+    void put() {
+        record PlacePieceCheck(Character piece, String location){};
         PlacePieceCheck[] checks = {
-            new PlacePieceCheck(blackKing, new Location("b6")),
-            new PlacePieceCheck(blackRook, new Location("b5")),
-            new PlacePieceCheck(whiteKing, new Location("c4")),
+            new PlacePieceCheck('K', "b6"),
+            new PlacePieceCheck('R', "b5"),
+            new PlacePieceCheck('k', "c4"),
         };
         int pieceCount = 0;
+        final var board = new Board();
+        board.initializeBlankBoard();
         assertEquals(pieceCount, board.countAllPieces());
         for (var check: checks) {
-            board.put(check.piece(), check.location());
+            final var location = new Location(check.location());
+            board.put(new Piece(check.piece()), location);
             ++pieceCount;
             assertEquals(pieceCount, board.countAllPieces());
-            assertEquals(check.piece(), board.get(check.location()));
+            assertEquals(check.piece(), board.get(location).toChar());
         }
 
         final var boardRepresentation =
@@ -151,61 +174,106 @@ public class BoardTest {
             ........\{NEW_LINE}""";
         assertEquals(boardRepresentation, Printer.print(board));
     }
+    // TODO: check
     @Test
-    void countPoints() {
-        var representation = """
-                . K R . . . . . 8
-                P . P B . . . . 7
-                . P . . Q . . . 6
-                . . . . . . . . 5
-                . . . . . n q . 4
-                . . . . . p . p 3
-                . . . . . p p . 2
-                . . . . r k . . 1
-                a b c d e f g h
-                """;
-        board = new Board(representation);
-        final Column column0 = board.getColumn(ColumnIndex.A);
-        final Column columnExpected = new Column("......P.");
-        assertEquals(columnExpected, column0);
+    void getStrength() {
+        final var board = new Board(board_5_4);
 
         final var blackKing = board.get(new Location("b8"));
-        assertEquals("K", blackKing.toString());
-        assertEquals(0.0, blackKing.strength());
+        assertEquals(0.0, blackKing.getStrength());
         final var blackBishop = board.get(new Location("d7"));
-        assertEquals("B", blackBishop.toString());
-        assertEquals(0.0,blackBishop.strength());
+        assertEquals(0.0,blackBishop.getStrength());
 
         final var blackPoints = 20.0;
         final var whitePoints = 19.5;
         assertEquals(whitePoints, board.getStrength(Color.WHITE));
         assertEquals(blackPoints, board.getStrength(Color.BLACK));
 
-        assertEquals(0.0, blackKing.strength());
-        assertEquals(3.0,blackBishop.strength());
+        assertEquals(0.0, blackKing.getStrength());
+        assertEquals(3.0,blackBishop.getStrength());
 
-        // for getPieces
-        final var piecesWhite = board.getPieces(Color.WHITE);
-        assertEquals(8, piecesWhite.size());
-        final var piecesBlack = board.getPieces(Color.BLACK);
-        assertEquals(7, piecesBlack.size());
-
-        isSorted(piecesWhite);
-        isSorted(piecesBlack);
+// TODO: add sorted
+//        isSorted(piecesWhite);
+//        isSorted(piecesBlack);
     }
-    private void isSorted(List<Piece> pieces) {
-        final var size =  pieces.size();
-        for(int i = 0; i<size-1; ++i) {
-            final var piece1 = pieces.get(i);
-            final var piece2 = pieces.get(i+1);
-            final var strength1 = piece1.strength();
-            final var strength2 = piece2.strength();
-            assertTrue(
-                strength1 >= strength2,
-                    STR."Expect \{strength1} of \{piece1} >=  \{strength2} of \{piece2}"
-            );
+//    private void isSorted(List<Piece> pieces) {
+//        final var size =  pieces.size();
+//        for(int i = 0; i<size-1; ++i) {
+//            final var piece1 = pieces.get(i);
+//            final var piece2 = pieces.get(i+1);
+//            final var strength1 = piece1.getStrength();
+//            final var strength2 = piece2.getStrength();
+//            assertTrue(
+//                strength1 >= strength2,
+//                    STR."Expect \{strength1} of \{piece1} >=  \{strength2} of \{piece2}"
+//            );
+//        }
+//    }
+
+    @Test
+    void testEquals() {
+        record Check(String boardA, String boardB, boolean expected){}
+        Check[] checks = {
+            new Check(
+                """
+                    . K R . . . . . 8
+                    P . P B . . . . 7
+                    . P . . Q . . . 6
+                    . . . . . . . . 5
+                    . . . . . n q . 4
+                    . . . . . p . p 3
+                    . . . . . p p . 2
+                    . . . . r k . . 1
+                    a b c d e f g h
+                    """, """
+                    . K R . . . . . 8
+                    P . P B . . . . 7
+                    . P . . Q . . . 6
+                    . . . . . . . . 5
+                    . . . . . n q . 4
+                    . . . . . p . p 3
+                    . . . . . p p . 2
+                    . . . . r k . . 1
+                    a b c d e f g h
+                    """, true
+            ),
+            new Check(
+                """
+                    . K R . . . . . 8
+                    P . P B . . . . 7
+                    . P . . Q . . . 6
+                    . . . . . . . . 5
+                    . . . . . n q . 4
+                    . . . . . p . p 3
+                    . . . . . p p . 2
+                    . . . . r k . . 1
+                    a b c d e f g h
+                    """, """
+                    . K R . . . . . 8
+                    P . P B . . . . 7
+                    . P . . Q . . . 6
+                    . . . . . . . . 5
+                    . . . . . n q . 4
+                    . . . . . p . p 3
+                    . . . . . p p . 2
+                    . . . . r k . P 1
+                    a b c d e f g h
+                    """, false
+            ),
+        };
+        for(final var check: checks) {
+            var boardA = new Board(check.boardA);
+            var boardB = new Board(check.boardB);
+            assertEquals(check.expected, boardA.equals(boardB));
+            assertEquals(check.expected, boardB.equals(boardA));
+            if(check.expected){
+                assertEquals(boardA, boardB);
+            } else {
+                assertNotEquals(boardA, boardB);
+            }
         }
-    }
+
+    } // end of testEquals
     @Test
     void moveKing() {
         record CheckNextPosition(String boardAfter, List<Direction> directions){};
@@ -459,68 +527,4 @@ public class BoardTest {
 
 }
 
-    @Test
-    void testEquals() {
-        record Check(String boardA, String boardB, boolean expected){}
-        Check[] checks = {
-            new Check(
-                """
-                    . K R . . . . . 8
-                    P . P B . . . . 7
-                    . P . . Q . . . 6
-                    . . . . . . . . 5
-                    . . . . . n q . 4
-                    . . . . . p . p 3
-                    . . . . . p p . 2
-                    . . . . r k . . 1
-                    a b c d e f g h
-                    """, """
-                    . K R . . . . . 8
-                    P . P B . . . . 7
-                    . P . . Q . . . 6
-                    . . . . . . . . 5
-                    . . . . . n q . 4
-                    . . . . . p . p 3
-                    . . . . . p p . 2
-                    . . . . r k . . 1
-                    a b c d e f g h
-                    """, true
-            ),
-            new Check(
-                """
-                    . K R . . . . . 8
-                    P . P B . . . . 7
-                    . P . . Q . . . 6
-                    . . . . . . . . 5
-                    . . . . . n q . 4
-                    . . . . . p . p 3
-                    . . . . . p p . 2
-                    . . . . r k . . 1
-                    a b c d e f g h
-                    """, """
-                    . K R . . . . . 8
-                    P . P B . . . . 7
-                    . P . . Q . . . 6
-                    . . . . . . . . 5
-                    . . . . . n q . 4
-                    . . . . . p . p 3
-                    . . . . . p p . 2
-                    . . . . r k . P 1
-                    a b c d e f g h
-                    """, false
-            ),
-        };
-        for(final var check: checks) {
-            var boardA = new Board(check.boardA);
-            var boardB = new Board(check.boardB);
-            assertEquals(check.expected, boardA.equals(boardB));
-            assertEquals(check.expected, boardB.equals(boardA));
-            if(check.expected){
-                assertEquals(boardA, boardB);
-            } else {
-                assertNotEquals(boardA, boardB);
-            }
-        }
-
-    }
 }

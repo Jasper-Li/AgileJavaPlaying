@@ -72,7 +72,7 @@ public class Piece implements Comparable<Piece>{
                 Character.toUpperCase(name) : name;
     }
 
-    public double strength() {
+    public double getStrength() {
         return strength;
     }
 
@@ -83,6 +83,6 @@ public class Piece implements Comparable<Piece>{
 
     @Override
     public int compareTo(Piece o) {
-        return Double.compare(strength(), o.strength());
+        return Double.compare(getStrength(), o.getStrength());
     }
 }

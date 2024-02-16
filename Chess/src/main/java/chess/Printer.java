@@ -23,7 +23,7 @@ public class Printer {
 
     public static void print(final List<Piece> pieces){
         for (final var piece : pieces) {
-            System.out.println(STR."\{piece} strength: \{piece.strength()}");
+            System.out.println(STR."\{piece} strength: \{piece.getStrength()}");
         }
     }
 }
