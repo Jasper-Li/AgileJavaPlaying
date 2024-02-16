@@ -9,6 +9,8 @@ import util.StringUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static util.StringUtil.NEW_LINE;
@@ -274,257 +276,270 @@ public class BoardTest {
         }
 
     } // end of testEquals
+
     @Test
-    void moveKing() {
-        record CheckNextPosition(String boardAfter, List<Direction> directions){};
-        record CheckMoving(String boardStart, Location fromHere, CheckNextPosition[] nextPositions){};
+    void getKingPossibleMoves() {
+        Map<String, Set<String>> checks = Map.of(
+            "e4", Set.of("e3", "e5", "d3", "d4", "d5", "f3", "f4", "f5")
+        );
+        checks.forEach((location, possibleMoveStrings) -> {
+            final Set<Location> possibleMoves = possibleMoveStrings.stream()
+                .map(Location::new)
+                .collect(Collectors.toSet());
+            assertEquals(possibleMoves, Board.getKingPossibleMoves(new Location("e4")));
 
-        CheckMoving[] checkMovings = {
-            new CheckMoving(
-                """
-                 . . . . . . . . 8
-                 . . . . . . . . 7
-                 . . . . . . . . 6
-                 . . . . . . . . 5
-                 . . . . K . . . 4
-                 . . . . . . . . 3
-                 . . . . . . . . 2
-                 . . . . . . . . 1
-                 a b c d e f g h""", new Location(E, R4),
-                new CheckNextPosition[]{
-                    new CheckNextPosition(
-                        """
-                         . . . . . . . . 8
-                         . . . . . . . . 7
-                         . . . . . . . . 6
-                         . . . . K . . . 5
-                         . . . . . . . . 4
-                         . . . . . . . . 3
-                         . . . . . . . . 2
-                         . . . . . . . . 1
-                         a b c d e f g h""",
-                        List.of(UP)),
-                    new CheckNextPosition(
-                        """
-                        . . . . . . . . 8
-                        . . . . . . . . 7
-                        . . . . . . . . 6
-                        . . . . . . . . 5
-                        . . . . . . . . 4
-                        . . . . K . . . 3
-                        . . . . . . . . 2
-                        . . . . . . . . 1
-                        a b c d e f g h""",
-                        List.of(DOWN)),
-                    new CheckNextPosition(
-                        """
-                        . . . . . . . . 8
-                        . . . . . . . . 7
-                        . . . . . . . . 6
-                        . . . . . . . . 5
-                        . . . K . . . . 4
-                        . . . . . . . . 3
-                        . . . . . . . . 2
-                        . . . . . . . . 1
-                        a b c d e f g h""",
-                        List.of(LEFT)),
-                    new CheckNextPosition(
-                        """
-                        . . . . . . . . 8
-                        . . . . . . . . 7
-                        . . . . . . . . 6
-                        . . . . . . . . 5
-                        . . . . . K . . 4
-                        . . . . . . . . 3
-                        . . . . . . . . 2
-                        . . . . . . . . 1
-                        a b c d e f g h""",
-                        List.of(RIGHT)),
-                    new CheckNextPosition(
-                        """
-                         . . . . . . . . 8
-                         . . . . . . . . 7
-                         . . . . . . . . 6
-                         . . . K . . . . 5
-                         . . . . . . . . 4
-                         . . . . . . . . 3
-                         . . . . . . . . 2
-                         . . . . . . . . 1
-                         a b c d e f g h""",
-                        List.of(UP_LEFT, LEFT_UP)),
-                    new CheckNextPosition(
-                        """
-                        . . . . . . . . 8
-                        . . . . . . . . 7
-                        . . . . . . . . 6
-                        . . . . . K . . 5
-                        . . . . . . . . 4
-                        . . . . . . . . 3
-                        . . . . . . . . 2
-                        . . . . . . . . 1
-                        a b c d e f g h""",
-                        List.of(UP_RIGHT, RIGHT_UP)),
-                    new CheckNextPosition(
-                        """
-                        . . . . . . . . 8
-                        . . . . . . . . 7
-                        . . . . . . . . 6
-                        . . . . . . . . 5
-                        . . . . . . . . 4
-                        . . . K . . . . 3
-                        . . . . . . . . 2
-                        . . . . . . . . 1
-                        a b c d e f g h""",
-                        List.of(DOWN_LEFT, LEFT_DOWN)),
-                    new CheckNextPosition(
-                        """
-                        . . . . . . . . 8
-                        . . . . . . . . 7
-                        . . . . . . . . 6
-                        . . . . . . . . 5
-                        . . . . . . . . 4
-                        . . . . . K . . 3
-                        . . . . . . . . 2
-                        . . . . . . . . 1
-                        a b c d e f g h""",
-                        List.of(DOWN_RIGHT, RIGHT_DOWN)),
-                }// end nextPositions
-            ), // end CheckMoving
-            new CheckMoving(
-                """
-                 K . . . . . . . 8
-                 . . . . . . . . 7
-                 . . . . . . . . 6
-                 . . . . . . . . 5
-                 . . . . . . . . 4
-                 . . . . . . . . 3
-                 . . . . . . . . 2
-                 . . . . . . . . 1
-                 a b c d e f g h""", new Location(A, R8),
-                new CheckNextPosition[]{
-                    new CheckNextPosition(
-                        """
-                         K . . . . . . . 8
-                         . . . . . . . . 7
-                         . . . . . . . . 6
-                         . . . . . . . . 5
-                         . . . . . . . . 4
-                         . . . . . . . . 3
-                         . . . . . . . . 2
-                         . . . . . . . . 1
-                         a b c d e f g h""",
-                        List.of(UP_LEFT, LEFT_UP, UP, UP_RIGHT, RIGHT_UP,LEFT, LEFT_DOWN, DOWN_LEFT)),
-                    new CheckNextPosition(
-                        """
-                         . K . . . . . . 8
-                         . . . . . . . . 7
-                         . . . . . . . . 6
-                         . . . . . . . . 5
-                         . . . . . . . . 4
-                         . . . . . . . . 3
-                         . . . . . . . . 2
-                         . . . . . . . . 1
-                         a b c d e f g h""",
-                        List.of(RIGHT)),
-                    new CheckNextPosition(
-                        """
-                         . . . . . . . . 8
-                         . K . . . . . . 7
-                         . . . . . . . . 6
-                         . . . . . . . . 5
-                         . . . . . . . . 4
-                         . . . . . . . . 3
-                         . . . . . . . . 2
-                         . . . . . . . . 1
-                         a b c d e f g h""",
-                        List.of(RIGHT_DOWN, DOWN_RIGHT)),
-                    new CheckNextPosition(
-                        """
-                         . . . . . . . . 8
-                         K . . . . . . . 7
-                         . . . . . . . . 6
-                         . . . . . . . . 5
-                         . . . . . . . . 4
-                         . . . . . . . . 3
-                         . . . . . . . . 2
-                         . . . . . . . . 1
-                         a b c d e f g h""",
-                        List.of(DOWN)),
-                }// end nextPositions
-            ), // end CheckMoving
-            new CheckMoving(
-                """
-                 . . . . . . . . 8
-                 . . . . . . . . 7
-                 . . . . . . . . 6
-                 . . . . . . . . 5
-                 . . . . . . . . 4
-                 . . . . . . . . 3
-                 . . . . . . . . 2
-                 . . . . . . . K 1
-                 a b c d e f g h""", new Location(H, R1),
-                new CheckNextPosition[]{
-                    new CheckNextPosition(
-                        """
-                         . . . . . . . . 8
-                         . . . . . . . . 7
-                         . . . . . . . . 6
-                         . . . . . . . . 5
-                         . . . . . . . . 4
-                         . . . . . . . . 3
-                         . . . . . . . . 2
-                         . . . . . . . K 1
-                         a b c d e f g h""",
-                        List.of(UP_RIGHT, RIGHT_UP, RIGHT, RIGHT_DOWN, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT_DOWN)),
-                    new CheckNextPosition(
-                        """
-                         . . . . . . . . 8
-                         . . . . . . . . 7
-                         . . . . . . . . 6
-                         . . . . . . . . 5
-                         . . . . . . . . 4
-                         . . . . . . . . 3
-                         . . . . . . . K 2
-                         . . . . . . . . 1
-                         a b c d e f g h""",
-                        List.of(UP)),
-                    new CheckNextPosition(
-                        """
-                         . . . . . . . . 8
-                         . . . . . . . . 7
-                         . . . . . . . . 6
-                         . . . . . . . . 5
-                         . . . . . . . . 4
-                         . . . . . . . . 3
-                         . . . . . . K . 2
-                         . . . . . . . . 1
-                         a b c d e f g h""",
-                        List.of(UP_LEFT, LEFT_UP)),
-                    new CheckNextPosition(
-                        """
-                         . . . . . . . . 8
-                         . . . . . . . . 7
-                         . . . . . . . . 6
-                         . . . . . . . . 5
-                         . . . . . . . . 4
-                         . . . . . . . . 3
-                         . . . . . . . . 2
-                         . . . . . . K . 1
-                         a b c d e f g h""",
-                        List.of(LEFT)),
-                }// end nextPositions
-            ), // end CheckMoving
-        };
-        for (final var checkMoving : checkMovings) {
-            for(final var nextPosition : checkMoving.nextPositions) {
-                for (final var direction : nextPosition.directions) {
-                   var board = new Board(checkMoving.boardStart);
-                    board.moveKing(checkMoving.fromHere, direction);
-                    assertEquals(new Board(nextPosition.boardAfter), board, STR."Failed on testing direction \{direction} from \{checkMoving.fromHere} of board:\n\{checkMoving.boardStart}" );
-                }
-            }
-        }
-
+        });
+    }
 }
-
-}
+//    @Test
+//    void moveKing() {
+//        record CheckNextPosition(String boardAfter, List<Direction> directions){};
+//        record CheckMoving(String boardStart, Location fromHere, CheckNextPosition[] nextPositions){};
+//
+//        CheckMoving[] checkMovings = {
+//            new CheckMoving(
+//                """
+//                 . . . . . . . . 8
+//                 . . . . . . . . 7
+//                 . . . . . . . . 6
+//                 . . . . . . . . 5
+//                 . . . . K . . . 4
+//                 . . . . . . . . 3
+//                 . . . . . . . . 2
+//                 . . . . . . . . 1
+//                 a b c d e f g h""", new Location(E, R4),
+//                new CheckNextPosition[]{
+//                    new CheckNextPosition(
+//                        """
+//                         . . . . . . . . 8
+//                         . . . . . . . . 7
+//                         . . . . . . . . 6
+//                         . . . . K . . . 5
+//                         . . . . . . . . 4
+//                         . . . . . . . . 3
+//                         . . . . . . . . 2
+//                         . . . . . . . . 1
+//                         a b c d e f g h""",
+//                        List.of(UP)),
+//                    new CheckNextPosition(
+//                        """
+//                        . . . . . . . . 8
+//                        . . . . . . . . 7
+//                        . . . . . . . . 6
+//                        . . . . . . . . 5
+//                        . . . . . . . . 4
+//                        . . . . K . . . 3
+//                        . . . . . . . . 2
+//                        . . . . . . . . 1
+//                        a b c d e f g h""",
+//                        List.of(DOWN)),
+//                    new CheckNextPosition(
+//                        """
+//                        . . . . . . . . 8
+//                        . . . . . . . . 7
+//                        . . . . . . . . 6
+//                        . . . . . . . . 5
+//                        . . . K . . . . 4
+//                        . . . . . . . . 3
+//                        . . . . . . . . 2
+//                        . . . . . . . . 1
+//                        a b c d e f g h""",
+//                        List.of(LEFT)),
+//                    new CheckNextPosition(
+//                        """
+//                        . . . . . . . . 8
+//                        . . . . . . . . 7
+//                        . . . . . . . . 6
+//                        . . . . . . . . 5
+//                        . . . . . K . . 4
+//                        . . . . . . . . 3
+//                        . . . . . . . . 2
+//                        . . . . . . . . 1
+//                        a b c d e f g h""",
+//                        List.of(RIGHT)),
+//                    new CheckNextPosition(
+//                        """
+//                         . . . . . . . . 8
+//                         . . . . . . . . 7
+//                         . . . . . . . . 6
+//                         . . . K . . . . 5
+//                         . . . . . . . . 4
+//                         . . . . . . . . 3
+//                         . . . . . . . . 2
+//                         . . . . . . . . 1
+//                         a b c d e f g h""",
+//                        List.of(UP_LEFT, LEFT_UP)),
+//                    new CheckNextPosition(
+//                        """
+//                        . . . . . . . . 8
+//                        . . . . . . . . 7
+//                        . . . . . . . . 6
+//                        . . . . . K . . 5
+//                        . . . . . . . . 4
+//                        . . . . . . . . 3
+//                        . . . . . . . . 2
+//                        . . . . . . . . 1
+//                        a b c d e f g h""",
+//                        List.of(UP_RIGHT, RIGHT_UP)),
+//                    new CheckNextPosition(
+//                        """
+//                        . . . . . . . . 8
+//                        . . . . . . . . 7
+//                        . . . . . . . . 6
+//                        . . . . . . . . 5
+//                        . . . . . . . . 4
+//                        . . . K . . . . 3
+//                        . . . . . . . . 2
+//                        . . . . . . . . 1
+//                        a b c d e f g h""",
+//                        List.of(DOWN_LEFT, LEFT_DOWN)),
+//                    new CheckNextPosition(
+//                        """
+//                        . . . . . . . . 8
+//                        . . . . . . . . 7
+//                        . . . . . . . . 6
+//                        . . . . . . . . 5
+//                        . . . . . . . . 4
+//                        . . . . . K . . 3
+//                        . . . . . . . . 2
+//                        . . . . . . . . 1
+//                        a b c d e f g h""",
+//                        List.of(DOWN_RIGHT, RIGHT_DOWN)),
+//                }// end nextPositions
+//            ), // end CheckMoving
+//            new CheckMoving(
+//                """
+//                 K . . . . . . . 8
+//                 . . . . . . . . 7
+//                 . . . . . . . . 6
+//                 . . . . . . . . 5
+//                 . . . . . . . . 4
+//                 . . . . . . . . 3
+//                 . . . . . . . . 2
+//                 . . . . . . . . 1
+//                 a b c d e f g h""", new Location(A, R8),
+//                new CheckNextPosition[]{
+//                    new CheckNextPosition(
+//                        """
+//                         K . . . . . . . 8
+//                         . . . . . . . . 7
+//                         . . . . . . . . 6
+//                         . . . . . . . . 5
+//                         . . . . . . . . 4
+//                         . . . . . . . . 3
+//                         . . . . . . . . 2
+//                         . . . . . . . . 1
+//                         a b c d e f g h""",
+//                        List.of(UP_LEFT, LEFT_UP, UP, UP_RIGHT, RIGHT_UP,LEFT, LEFT_DOWN, DOWN_LEFT)),
+//                    new CheckNextPosition(
+//                        """
+//                         . K . . . . . . 8
+//                         . . . . . . . . 7
+//                         . . . . . . . . 6
+//                         . . . . . . . . 5
+//                         . . . . . . . . 4
+//                         . . . . . . . . 3
+//                         . . . . . . . . 2
+//                         . . . . . . . . 1
+//                         a b c d e f g h""",
+//                        List.of(RIGHT)),
+//                    new CheckNextPosition(
+//                        """
+//                         . . . . . . . . 8
+//                         . K . . . . . . 7
+//                         . . . . . . . . 6
+//                         . . . . . . . . 5
+//                         . . . . . . . . 4
+//                         . . . . . . . . 3
+//                         . . . . . . . . 2
+//                         . . . . . . . . 1
+//                         a b c d e f g h""",
+//                        List.of(RIGHT_DOWN, DOWN_RIGHT)),
+//                    new CheckNextPosition(
+//                        """
+//                         . . . . . . . . 8
+//                         K . . . . . . . 7
+//                         . . . . . . . . 6
+//                         . . . . . . . . 5
+//                         . . . . . . . . 4
+//                         . . . . . . . . 3
+//                         . . . . . . . . 2
+//                         . . . . . . . . 1
+//                         a b c d e f g h""",
+//                        List.of(DOWN)),
+//                }// end nextPositions
+//            ), // end CheckMoving
+//            new CheckMoving(
+//                """
+//                 . . . . . . . . 8
+//                 . . . . . . . . 7
+//                 . . . . . . . . 6
+//                 . . . . . . . . 5
+//                 . . . . . . . . 4
+//                 . . . . . . . . 3
+//                 . . . . . . . . 2
+//                 . . . . . . . K 1
+//                 a b c d e f g h""", new Location(H, R1),
+//                new CheckNextPosition[]{
+//                    new CheckNextPosition(
+//                        """
+//                         . . . . . . . . 8
+//                         . . . . . . . . 7
+//                         . . . . . . . . 6
+//                         . . . . . . . . 5
+//                         . . . . . . . . 4
+//                         . . . . . . . . 3
+//                         . . . . . . . . 2
+//                         . . . . . . . K 1
+//                         a b c d e f g h""",
+//                        List.of(UP_RIGHT, RIGHT_UP, RIGHT, RIGHT_DOWN, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT_DOWN)),
+//                    new CheckNextPosition(
+//                        """
+//                         . . . . . . . . 8
+//                         . . . . . . . . 7
+//                         . . . . . . . . 6
+//                         . . . . . . . . 5
+//                         . . . . . . . . 4
+//                         . . . . . . . . 3
+//                         . . . . . . . K 2
+//                         . . . . . . . . 1
+//                         a b c d e f g h""",
+//                        List.of(UP)),
+//                    new CheckNextPosition(
+//                        """
+//                         . . . . . . . . 8
+//                         . . . . . . . . 7
+//                         . . . . . . . . 6
+//                         . . . . . . . . 5
+//                         . . . . . . . . 4
+//                         . . . . . . . . 3
+//                         . . . . . . K . 2
+//                         . . . . . . . . 1
+//                         a b c d e f g h""",
+//                        List.of(UP_LEFT, LEFT_UP)),
+//                    new CheckNextPosition(
+//                        """
+//                         . . . . . . . . 8
+//                         . . . . . . . . 7
+//                         . . . . . . . . 6
+//                         . . . . . . . . 5
+//                         . . . . . . . . 4
+//                         . . . . . . . . 3
+//                         . . . . . . . . 2
+//                         . . . . . . K . 1
+//                         a b c d e f g h""",
+//                        List.of(LEFT)),
+//                }// end nextPositions
+//            ), // end CheckMoving
+//        };
+//        for (final var checkMoving : checkMovings) {
+//            for(final var nextPosition : checkMoving.nextPositions) {
+//                for (final var direction : nextPosition.directions) {
+//                   var board = new Board(checkMoving.boardStart);
+//                    board.moveKing(checkMoving.fromHere, direction);
+//                    assertEquals(new Board(nextPosition.boardAfter), board, STR."Failed on testing direction \{direction} from \{checkMoving.fromHere} of board:\n\{checkMoving.boardStart}" );
+//                }
+//            }
+//        }
+//
+//    }

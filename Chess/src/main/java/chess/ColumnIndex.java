@@ -13,7 +13,7 @@ public enum ColumnIndex {
     H(7),
     INVALID(-1);
 
-    private int internalIndex;
+    private final int internalIndex;
     ColumnIndex(int internalIndex) {
         this.internalIndex = internalIndex;
     }

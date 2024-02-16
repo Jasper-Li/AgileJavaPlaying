@@ -4,10 +4,7 @@ import pieces.Color;
 import pieces.Piece;
 import util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Board {
     public static final int GRIDS_COUNT_PER_LINE = 8;
@@ -147,14 +144,6 @@ public class Board {
         buffer.append(StringUtil.NEW_LINE);
         return buffer.toString();
     }
-    public void moveKing(Location start, Direction direction) {
-        var newLocation = start.moveKing(direction);
-        if(newLocation != start) {
-            var piece = get(start);
-            put(piece, newLocation);
-            put(new Piece(), start);
-        }
-    }
 
     @Override
     public boolean equals(Object that){
@@ -162,6 +151,19 @@ public class Board {
             return this.ranks.equals(t.ranks);
         }
         return false;
+    }
+
+    static Set<Location> getKingPossibleMoves(Location current) {
+        final Set<Location> locations = new HashSet<>();
+        final int[] validSteps={-1, 0, 1};
+        for(int i=0; i < validSteps.length; ++i) {
+            for (int j = 0; j < validSteps.length; ++j) {
+                final var optionalAfter = current.move(validSteps[i], validSteps[j]);
+                if(optionalAfter.isEmpty()) continue;
+                locations.add(optionalAfter.get());
+            }
+        }
+        return locations;
     }
 
 }
