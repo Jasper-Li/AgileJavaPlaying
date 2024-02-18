@@ -2,11 +2,10 @@ package chess;
 
 import org.junit.jupiter.api.Test;
 import pieces.Color;
-import pieces.Type;
+import pieces.Pawn;
 
 import java.util.Map;
-import java.util.EnumMap;
-import static pieces.Type.*;
+
 import static pieces.Color.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,45 +24,45 @@ class ColumnTest extends PiecesTest {
     @Test
     void getTypeCount() {
         final var column = new Column("......P.");
-        final EnumMap<Type, Integer> onePawn = new EnumMap<>(Map.of(
-            Type.PAWN, 1
-        ));
-        final var emptyPieces = new EnumMap<Type, Integer>(Type.class);
+        final Map<String, Integer> onePawn = Map.of(
+            Pawn.class.getName(), 1
+        );
+        final var emptyPieces = Map.of();
         assertEquals(onePawn, column.getTypeCount(BLACK));
         assertEquals(emptyPieces, column.getTypeCount(WHITE));
     }
     @Test
     void testGetTypeCount() {
-        record Check(String column, EnumMap<Type, Integer>black, EnumMap<Type, Integer> white){};
+        record Check(String column, Map<String, Integer>black, Map<String, Integer> white){}
         Check[] checks = {
             new Check(
                 "rnbqkbnr",
-                new EnumMap<>(Type.class),
-                new EnumMap<>(Map.of(
-                    ROOK, 2,
-                    KNIGHT, 2,
-                    BISHOP, 2,
-                    KING, 1,
-                    QUEEN, 1
-                ))
+                Map.of(),
+                Map.of(
+                    "pieces.Rook", 2,
+                    "pieces.Knight", 2,
+                    "pieces.Bishop", 2,
+                    "pieces.King", 1,
+                    "pieces.Queen", 1
+                )
             ),
             new Check(
                 "RNBQKBNR",
-                new EnumMap<>(Map.of(
-                    ROOK, 2,
-                    KNIGHT, 2,
-                    BISHOP, 2,
-                    KING, 1,
-                    QUEEN, 1
-                )),
-                new EnumMap<>(Type.class)
+                Map.of(
+                    "pieces.Rook", 2,
+                    "pieces.Knight", 2,
+                    "pieces.Bishop", 2,
+                    "pieces.King", 1,
+                    "pieces.Queen", 1
+                ),
+                Map.of()
             ),
             new Check(
                 "PPP.ppp.",
-                new EnumMap<>(Map.of(
-                    PAWN, 3)),
-                new EnumMap<>(Map.of(
-                    PAWN, 3))
+                Map.of(
+                    "pieces.Pawn", 3),
+                Map.of(
+                    "pieces.Pawn", 3)
             )
         };
         for(final var check : checks){
@@ -82,7 +81,8 @@ class ColumnTest extends PiecesTest {
         ColorStrength() {
             this(0.0, new PieceStrength[]{});
         }
-    };
+    }
+
     @Test
     void getStrength() {
         //Map
@@ -139,7 +139,9 @@ class ColumnTest extends PiecesTest {
             final var piece =column.get(pieceStrength.index);
             assertEquals(0, piece.getStrength());
         }
-        assertEquals(colorStrength.strengthAll, column.getStrength(color));
+        column.calculateStrength(color);
+        final var msg = STR."Checking \{column.toString()}";
+        assertEquals(colorStrength.strengthAll, column.getStrength(color), msg);
         for(final var pieceStrength : colorStrength.pieceStrengths){
             final var piece =column.get(pieceStrength.index);
             assertEquals(pieceStrength.strength, piece.getStrength());

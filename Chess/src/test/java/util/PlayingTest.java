@@ -2,8 +2,7 @@ package util;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayingTest {
     @Test
@@ -17,11 +16,11 @@ public class PlayingTest {
         }
 
         final A a = new A();
-        assertTrue(a instanceof  A);
+        assertInstanceOf(A.class, a);
         assertEquals("A", a.name());
         final A b = new B();
-        assertTrue(b instanceof  A);
-        assertTrue(b instanceof  B);
+        assertInstanceOf(A.class, b);
+        assertInstanceOf(B.class, b);
         assertEquals("B", b.name());
     }
 }

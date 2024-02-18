@@ -1,23 +1,22 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import static chess.ColumnIndex.*;
 import static chess.RankIndex.*;
 
-public class Index {
+public abstract class Index {
     public static final int MAX_INDEX = Board.GRIDS_COUNT_PER_LINE - 1;
     public static final int MIN_INDEX = 0;
-    int index;
-    record IndexToColumnRankIndex(ColumnIndex columnIndex, RankIndex rankIndex) {}
-    static IndexToColumnRankIndex[] indexToColumnRankIndex = null;
-    private Index(int index) {
+    public static final Character INVALID_INDEX_REPRESENTATION = '.';
+    public static final int INVALID_INDEX = -1;
+    Integer index;
+    protected Index(int index) {
         this.index = index;
     }
 
-    static Optional<Index> of(int index) {
-        return isValid(index) ? Optional.of(new Index(index)) :  Optional.empty();
-    }
-    int value() {
+    int getInternalIndex() {
         return index;
     }
 
@@ -28,37 +27,45 @@ public class Index {
         return isValid(index);
     }
 
-    Optional<Index> move(int step) {
-        if(step == 0) return Optional.empty();
-        return of(index + step);
+    public abstract String toString();
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Index that &&  this.index.equals(that.index);
     }
-    ColumnIndex toColumnIndex() {
-        if(indexToColumnRankIndex == null){
-            initIndexToColumnRankIndex();
+
+    protected int getMoveDestinationIndex(int step) {
+        final var after = index + step;
+        return isValid(after) ? after : INVALID_INDEX;
+    }
+
+    protected int getNextIndex() {
+        return 0<=index && index < MAX_INDEX
+            ? index + 1
+            : INVALID_INDEX;
+    }
+    /**
+     * @return List<Integer>  possible steps.
+     */
+    public List<Integer> getPossibleMoves() {
+        final List<Integer> moves = new ArrayList<>(Board.GRIDS_COUNT_PER_LINE - 1);
+        for(int i=MIN_INDEX; i <= MAX_INDEX; ++i){
+            final var move = i - index;
+            if(move != 0) {
+                moves.addLast(move);
+            }
         }
-        return indexToColumnRankIndex[index].columnIndex;
+        return moves;
     }
-    RankIndex toRankIndex() {
-        if(indexToColumnRankIndex == null){
-            initIndexToColumnRankIndex();
-        }
-        return indexToColumnRankIndex[index].rankIndex;
+    public boolean isColumnIndex() {
+        return this.getClass().equals(ColumnIndex.class);
     }
-    static void initIndexToColumnRankIndex() {
-        indexToColumnRankIndex = new IndexToColumnRankIndex[] {
-            new IndexToColumnRankIndex(A, R1),
-            new IndexToColumnRankIndex(B, R2),
-            new IndexToColumnRankIndex(C, R3),
-            new IndexToColumnRankIndex(D, R4),
-            new IndexToColumnRankIndex(E, R5),
-            new IndexToColumnRankIndex(F, R6),
-            new IndexToColumnRankIndex(G, R7),
-            new IndexToColumnRankIndex(H, R8),
-        };
+    public boolean isRankIndex() {
+        return this.getClass().equals(RankIndex.class);
     }
 
     @Override
-    public String toString() {
-        return STR."\{index}";
+    public int hashCode() {
+        return index.hashCode();
     }
 }

@@ -11,14 +11,7 @@ public class Printer {
     }
 
     public static String printByStringConcatenation(Board board) {
-        String result = "";
-        for(int i = Board.GRIDS_COUNT_PER_LINE; i > 0; --i) {
-            var rankIndex = RankIndex.of((char)('0' + i));
-            var rank = board.getRank(rankIndex).toString();
-            var line = StringUtil.appendNewLine(rank);
-            result += line;
-        }
-        return result;
+        return board.toString();
     }
 
     public static void print(final List<Piece> pieces){

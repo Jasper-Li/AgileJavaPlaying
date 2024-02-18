@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -63,5 +65,31 @@ public abstract class SessionTest {
     @Test
     void getSessionLength() {
         assertThat(session.getSessionLength(), greaterThan(0));
+    }
+
+    @Test
+    void averageGpaForPartTimeStudents(){
+        record StudentInfo(Grade grade, int credit){}
+        final StudentInfo[] studentInfos = {
+            new StudentInfo(Grade.A, 2),
+            new StudentInfo(Grade.B, 2),
+            new StudentInfo(Grade.C, Student.CREDITS_REQUIRED_FOR_FULL_TIME),
+        };
+        for(final var info : studentInfos){
+            final var student = new Student("a");
+            student.addGrade(info.grade);
+            student.addCredits(info.credit);
+            session.enroll(student);
+        }
+        assertEquals(3.5, session.averageGpaForPartTineStudents());
+    }
+    @Test
+    void testIterate() {
+        session.enroll(new Student("1"));
+        session.enroll(new Student("2"));
+        session.enroll(new Student("3"));
+        List<Student> result = new ArrayList<>();
+        for( Student student : session) result.add(student);
+        assertEquals(session.getAllStudents(), result);
     }
 }

@@ -1,65 +1,43 @@
 package chess;
 
-import java.util.Map;
+import java.util.Optional;
 
-public enum ColumnIndex {
-    A(0),
-    B(1),
-    C(2),
-    D(3),
-    E(4),
-    F(5),
-    G(6),
-    H(7),
-    INVALID(-1);
+public class ColumnIndex extends  Index {
+    public static final ColumnIndex A = new ColumnIndex(0);
+    public static final ColumnIndex B = new ColumnIndex(1);
+    public static final ColumnIndex C = new ColumnIndex(2);
+    public static final ColumnIndex D = new ColumnIndex(3);
+    public static final ColumnIndex E = new ColumnIndex(4);
+    public static final ColumnIndex F = new ColumnIndex(5);
+    public static final ColumnIndex G = new ColumnIndex(6);
+    public static final ColumnIndex H = new ColumnIndex(7);
+    public static final ColumnIndex INVALID = new ColumnIndex(INVALID_INDEX);
 
-    private final int internalIndex;
-    ColumnIndex(int internalIndex) {
-        this.internalIndex = internalIndex;
-    }
-    boolean isValid() {
-        return this != INVALID;
-    }
-    public int getInternalIndex() {
-        return internalIndex;
-    }
-    public ColumnIndex increment() {
-        return switch(this){
-            case H, INVALID -> INVALID;
-            default -> of((char)(representationLowerCase() + 1));
-        };
-    }
-    public ColumnIndex decrement() {
-        return switch(this){
-            case A, INVALID -> INVALID;
-            default -> of((char)(representationLowerCase() - 1));
-        };
-    }
-    public Character representationLowerCase() {
-        char first = super.toString().charAt(0) ;
-        return Character.toLowerCase(first);
+    public ColumnIndex(int index) {
+        super(index);
     }
 
-    private static Map<Character, ColumnIndex> representationToObject = null;
-    static ColumnIndex of(Character representation) {
-        if(representationToObject == null){
-            initRepresentationToObject();
-        }
-        return representationToObject.getOrDefault(
-            Character.toLowerCase(representation),
-            INVALID
-        );
+    static ColumnIndex of(char representation) {
+        return new ColumnIndex(representation - 'a');
     }
-    private static void initRepresentationToObject() {
-        representationToObject = Map.of(
-            'a', A,
-            'b', B,
-            'c', C,
-            'd', D,
-            'e', E,
-            'f', F,
-            'g', G,
-            'h', H
-        );
+
+    public Optional<ColumnIndex> move(int step) {
+        final var destination = getMoveDestinationIndex(step);
+        return isValid(destination) ? Optional.of(new ColumnIndex(destination)) : Optional.empty();
+    }
+
+    public ColumnIndex next() {
+        return new ColumnIndex(getNextIndex());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        final char buf = isValid() ? (char) ('a' + index) : INVALID_INDEX_REPRESENTATION;
+        return Character.toString(buf);
     }
 }

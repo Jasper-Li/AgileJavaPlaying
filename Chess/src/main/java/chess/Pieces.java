@@ -4,11 +4,13 @@ import pieces.Color;
 import pieces.Piece;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static chess.Board.GRIDS_COUNT_PER_LINE;
 
 public class Pieces {
+    public static final String BLANK_REPRESENTATION = "........";
     protected final List<Piece> pieces = new ArrayList<>(GRIDS_COUNT_PER_LINE);
     Pieces() {}
     Pieces(String representation){
@@ -21,7 +23,7 @@ public class Pieces {
         for (final var c : representation.split("")) {
             final var first = c.charAt(0);
             if(Character.isWhitespace(first)) continue;
-            var piece = new Piece(first);
+            var piece = Piece.of(first);
             if(pieces.size() > index) {
                 pieces.set(index, piece);
             } else {
@@ -33,6 +35,9 @@ public class Pieces {
     }
 
     void put(int index, Piece piece){
+        if(pieces.size() != GRIDS_COUNT_PER_LINE) {
+            set(BLANK_REPRESENTATION);
+        }
         pieces.set(index, piece);
     }
     Piece get(int index){
@@ -56,10 +61,7 @@ public class Pieces {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Pieces that){
-            return this.pieces.equals(that.pieces);
-        }
-        return false;
+        return obj instanceof Pieces that && this.pieces.equals(that.pieces);
     }
 
     public int countValidPieces() {
@@ -83,18 +85,28 @@ public class Pieces {
     public Pieces getPieces(Color color) {
         final var pieces = new Pieces();
         for(final var piece : this.pieces){
-            if(!piece.isEmpty() && piece.color() == color) {
+            if(!piece.isEmpty() && piece.getColor() == color) {
                 pieces.pieces.add(piece);
             }
         }
         return  pieces;
     }
 
-    public void append(Pieces some) {
+    List<Piece> getPieces() {
+        return pieces;
+    }
+    public void addAll(Pieces some) {
         this.pieces.addAll(some.pieces);
+    }
+    public void add(Piece piece) {
+        this.pieces.add(piece);
     }
 
     public int size() {
         return pieces.size();
+    }
+    public void sort() {
+        Comparator<Piece> comparator = (p1, p2) -> Double.compare(p1.getStrength(), p2.getStrength());
+        pieces.sort(comparator.reversed());
     }
 }

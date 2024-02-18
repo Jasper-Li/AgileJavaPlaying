@@ -1,15 +1,16 @@
 package chess;
 
-import chess.Pieces;
 import org.junit.jupiter.api.Test;
+import pieces.Pawn;
 import pieces.Piece;
 
 import java.util.List;
 
 import static java.lang.System.out;
 import static org.junit.jupiter.api.Assertions.*;
-import static pieces.Type.*;
 import static pieces.Color.*;
+
+import pieces.Queen;
 
 public class PiecesTest {
     protected Pieces createPieces() {
@@ -63,8 +64,8 @@ public class PiecesTest {
     void put() {
         record Check(Piece piece, int index){}
         final Check[] checks = {
-            new Check(new Piece(BLACK, PAWN), 0),
-            new Check(new Piece(WHITE, QUEEN), 3),
+            new Check(new Pawn(BLACK), 0),
+            new Check(new Queen(WHITE), 3),
         };
         final var pieces = createPieces("........");
         for(final var check : checks) {
@@ -98,7 +99,7 @@ public class PiecesTest {
 
     @Test
     void countValidPieces() {
-        record Check(String pieces, int count){};
+        record Check(String pieces, int count){}
         final Check[] checks={
             new Check("........", 0),
             new Check("p.......", 1),
@@ -106,13 +107,14 @@ public class PiecesTest {
             new Check("rnbqkbnr", 8),
         };
         for(final var check : checks) {
-            assertEquals(check.count, createPieces(check.pieces).countValidPieces());
+            assertEquals(check.count, createPieces(check.pieces).countValidPieces(),
+                STR."Failed to check \{check.pieces}");
         }
     }
     @Test
     void count() {
-        record PieceCount(Character piece, int count){};
-        record Check(String pieces, List<PieceCount> pieceCounts){};
+        record PieceCount(Character piece, int count){}
+        record Check(String pieces, List<PieceCount> pieceCounts){}
         final Check[] checks={
             new Check("........", List.of(
                 new PieceCount('p', 0) ,
@@ -163,8 +165,9 @@ public class PiecesTest {
         for(final var check : checks) {
             final var pieces= createPieces(check.pieces);
             for (final var pieceCount : check.pieceCounts) {
-                final var piece = new Piece(pieceCount.piece);
-                assertEquals(pieceCount.count, pieces.count(piece));
+                final var piece = Piece.of(pieceCount.piece);
+                assertEquals(pieceCount.count, pieces.count(piece),
+                    STR."check \{pieceCount.piece} on \{check.pieces}");
             }
         }
     }
@@ -195,7 +198,7 @@ public class PiecesTest {
         for (final var check : checks) {
             final var start = new Pieces(check.start);
             final var some = new Pieces(check.some);
-            start.append(some);
+            start.addAll(some);
             final var after = new Pieces(check.after);
             assertEquals(after, start);
         }
@@ -213,5 +216,4 @@ public class PiecesTest {
             assertEquals(check.prettyString, new Pieces(check.pieces).toPrettyString());
         }
     }
-
 }

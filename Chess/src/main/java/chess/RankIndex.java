@@ -1,67 +1,42 @@
 package chess;
 
-import java.util.Calendar;
+import java.util.Optional;
 
-public enum RankIndex {
-    R1(0),
-    R2(1),
-    R3(2),
-    R4(3),
-    R5(4),
-    R6(5),
-    R7(6),
-    R8(7),
-    INVALID(-1);
+public class RankIndex extends Index{
+    public static final RankIndex R1 = new RankIndex(0);
+    public static final RankIndex R2 = new RankIndex(1);
+    public static final RankIndex R3 = new RankIndex(2);
+    public static final RankIndex R4 = new RankIndex(3);
+    public static final RankIndex R5 = new RankIndex(4);
+    public static final RankIndex R6 = new RankIndex(5);
+    public static final RankIndex R7 = new RankIndex(6);
+    public static final RankIndex R8 = new RankIndex(7);
+    public static final RankIndex INVALID = new RankIndex(INVALID_INDEX);
 
-    final private int internalIndex;
-    RankIndex(int internalIndex) {
-        this.internalIndex = internalIndex;
-    }
-    boolean isValid() {
-        return this != INVALID;
-    }
-    public int getInternalIndex() {
-        return internalIndex;
-    }
-    public RankIndex increment() {
-        if(internalIndex == 7 || internalIndex == -1){
-            return INVALID;
-        }
-        var representation =(char)(representation() + 1);
-        return RankIndex.of(representation);
-    }
-    public RankIndex decrement() {
-        if(internalIndex == 0 || internalIndex == -1){
-            return INVALID;
-        }
-        var representation =(char)(representation() - 1);
-        return RankIndex.of(representation);
+    protected RankIndex(int index) {
+        super(index);
     }
 
-    Character representation() {
-        return switch (this) {
-            case R1 -> '1' ;
-            case R2 -> '2' ;
-            case R3 -> '3' ;
-            case R4 -> '4' ;
-            case R5 -> '5' ;
-            case R6 -> '6' ;
-            case R7 -> '7' ;
-            case R8 -> '8' ;
-           default -> 'X';
-        };
+    static RankIndex of(char representation) {
+        return new RankIndex(representation - '1');
     }
-    static RankIndex of(Character representation) {
-        return switch (representation) {
-            case '1' -> R1;
-            case '2' -> R2;
-            case '3' -> R3;
-            case '4' -> R4;
-            case '5' -> R5;
-            case '6' -> R6;
-            case '7' -> R7;
-            case '8' -> R8;
-            default -> INVALID;
-        };
+
+    @Override
+    public String toString() {
+        return isValid()
+            ? Integer.valueOf(index + 1).toString()
+            : INVALID_INDEX_REPRESENTATION.toString();
+    }
+
+    public Optional<RankIndex> move(int step){
+        final var destination = getMoveDestinationIndex(step);
+        return isValid(destination) ? Optional.of(new RankIndex(destination)) : Optional.empty();
+    }
+    public RankIndex next() {
+        return new RankIndex(getNextIndex());
+    }
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
 }

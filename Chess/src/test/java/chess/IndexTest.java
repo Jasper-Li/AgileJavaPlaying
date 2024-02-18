@@ -2,75 +2,95 @@ package chess;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static chess.ColumnIndex.*;
-import static chess.RankIndex.*;
 
-class IndexTest {
+abstract class IndexTest {
+    record ValidInstanceChecker(Character index, int internalIndex) {
+    }
+
+    abstract Index of(Character representation);
+
+    abstract ValidInstanceChecker[] createValidIndex();
+
+    abstract Character[] createInvalidIndex();
 
     @Test
     void of() {
-        final int[] validIndexes = {0,1,2,3,4,5,6,7};
-        for(final int validIndex : validIndexes){
-            final var index = Index.of(validIndex);
-            assertTrue(index.isPresent());
-            assertEquals(validIndex, index.get().value());
+        for (final var check : createValidIndex()) {
+            final var index = of(check.index);
+            assertTrue(index.isValid());
+            assertEquals(check.internalIndex, index.getInternalIndex());
+            assertEquals(check.index.toString(), index.toString());
         }
-        final int[] invalidIndexes = {-5, -1, 8, 10};
-        for(final var invalidIndex : invalidIndexes){
-            final var index = Index.of(invalidIndex);
-            assertTrue(index.isEmpty());
-        }
-    }
-
-    @Test
-    void move() {
-        final var start = Index.of(4).get();
-        Map<Integer, Integer> validMoves = Map.of(
-            -4, 0,
-            -3, 1,
-            -2, 2,
-            -1, 3,
-            1, 5,
-            2, 6,
-            3, 7
-        );
-        validMoves.forEach((step, after) ->{
-           final var optionalIndex = start.move(step);
-           assertTrue(optionalIndex.isPresent());
-           assertEquals(after, optionalIndex.get().value());
-        });
-        int[] invalidSteps = {-5, 0, 4};
-        for(final var step: invalidSteps) {
-            final var optionalIndex = start.move(step);
-            assertTrue(optionalIndex.isEmpty());
+        for (final var invalidRepresentation : createInvalidIndex()) {
+            final var index = of(invalidRepresentation);
+            assertFalse(index.isValid());
         }
     }
 
-    @Test
-    void toColumnRankIndex() {
-        Index index = Index.of(0).get();
-        assertEquals(A, index.toColumnIndex());
-        assertEquals(R1, index.toRankIndex());
-    }
+    abstract Character[] createEquals();
 
     @Test
-    void testToString() {
-        record Check(int index, String string){}
-        Check[] checks = {
-            new Check(0, "0"),
-            new Check(1, "1"),
-            new Check(2, "2"),
-            new Check(3, "3"),
-            new Check(4, "4"),
-            new Check(5, "5"),
-            new Check(6, "6"),
-            new Check(7, "7"),
-        };
-        for(final var check : checks) {
-            assertEquals(check.string, Index.of(check.index).get().toString());
+    void testEquals() {
+        for (final var index : createEquals()) {
+            final var a_ = of(index);
+            if(a_.isColumnIndex()){
+                final var a = (ColumnIndex) a_;
+                final var b = (ColumnIndex) of(index);
+                assertEquals(a, b);
+                assertEquals(b, a);
+            } else {
+                final var a = (RankIndex) a_;
+                final var b = (RankIndex) of(index);
+                assertEquals(a, b);
+                assertEquals(b, a);
+
+            }
         }
     }
+
+    record ConstChecker(Index index, Character expected) {
+    }
+
+    abstract ConstChecker[] createConstChecker();
+
+    @Test
+    void constCheck() {
+        for (final var check : createConstChecker()) {
+            final var index = of(check.expected);
+            final var msg = STR."check \{check.index} '\{check.expected}'";
+            assertEquals(check.index, index, msg);
+            assertEquals(index, check.index, msg);
+        }
+    }
+
+    record PossibleMoves(Index index, List<Integer> possibleMoves) {
+    }
+
+    abstract PossibleMoves[] createPossibleMoves();
+
+    @Test
+    void getPossibleMoves() {
+        for (final var check : createPossibleMoves()) {
+            assertEquals(check.possibleMoves, check.index.getPossibleMoves());
+        }
+    }
+
+    public record MoveChecker(Index index, Map<Integer, Integer> validMoves) {
+    }
+
+    public record InvalidMoveChecker(Index index, Integer[] invalidMoves) {
+    }
+
+    abstract MoveChecker[] createMoveChecker();
+
+    abstract InvalidMoveChecker[] createInvalidMoveChecker();
+
+    abstract void move();
+    abstract void next();
+
 }

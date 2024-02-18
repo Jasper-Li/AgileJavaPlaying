@@ -12,7 +12,7 @@ public class Board {
     public static final RankIndex WHITE_SECOND_RANK_INDEX_ON_BOARD = RankIndex.R2;
     public static final RankIndex BLACK_SECOND_RANK_INDEX_ON_BOARD = RankIndex.R7;
     public static final RankIndex BLACK_BACK_RANK_INDEX_ON_BOARD = RankIndex.R8;
-    private final List<Rank> ranks = new ArrayList<Rank>(GRIDS_COUNT_PER_LINE);
+    private final List<Rank> ranks = new ArrayList<>(GRIDS_COUNT_PER_LINE);
     public Board() {
         for (int i = 0; i < GRIDS_COUNT_PER_LINE; ++i) {
             ranks.add(new Rank());
@@ -38,24 +38,20 @@ public class Board {
     }
     public Board initialize() {
         var rankIndex = RankIndex.R1;
-        for(int i = 0; i < GRIDS_COUNT_PER_LINE; ++i) {
+        for (int i = 0; i < GRIDS_COUNT_PER_LINE; ++i) {
             final var rank = ranks.get(i);
-            switch (rankIndex) {
-                case RankIndex.R1-> {
-                   rank.set(Color.WHITE, new BackRankArrangement());
-                }
-                case RankIndex.R2-> {
-                    rank.set(Color.WHITE, new SecondRankArrangement());
-                }
-                case RankIndex.R7-> {
-                    rank.set(Color.BLACK, new SecondRankArrangement());
-                }
-                case RankIndex.R8-> {
-                    rank.set(Color.BLACK, new BackRankArrangement());
-                }
-                default -> rank.set(Rank.BLANK_REPRESENTATION);
-            };
-            rankIndex = rankIndex.increment();
+            if (rankIndex.equals(RankIndex.R1)) {
+                rank.set("rnbqkbnr");
+            } else if (rankIndex.equals(RankIndex.R2)) {
+                rank.set("pppppppp");
+            } else if (rankIndex.equals(RankIndex.R7)) {
+                rank.set("PPPPPPPP");
+            } else if (rankIndex.equals(RankIndex.R8)) {
+                rank.set("RNBQKBNR");
+            } else {
+                rank.set(Rank.BLANK_REPRESENTATION);
+            }
+            rankIndex = rankIndex.next();
         }
         return this;
     }
@@ -99,11 +95,11 @@ public class Board {
         var pieces = new Pieces();
         for (final var rank : ranks)  {
             final var some = rank.getPieces(color);
-            pieces.append(some);
+            pieces.addAll(some);
         }
+        pieces.sort();
         return pieces;
     }
-
 
     public void put(Piece piece, Location location) {
         final var column = location.column();
@@ -111,18 +107,6 @@ public class Board {
         getRank(rank).put(column, piece);
     }
 
-
-    public double getStrength(Color color) {
-        double points = 0;
-        var columnIndex = ColumnIndex.A;
-        for(int i = 0; i< GRIDS_COUNT_PER_LINE; ++i)  {
-            final var column = getColumn(columnIndex);
-            final var point = column.getStrength(color);
-            points += point;
-            columnIndex = columnIndex.increment();
-        }
-        return points;
-    }
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder();
@@ -145,25 +129,17 @@ public class Board {
         return buffer.toString();
     }
 
+    public Set<Location> getLocations(Piece piece) {
+        Set<Location> locations = new HashSet<>();
+        return locations;
+    }
+
     @Override
     public boolean equals(Object that){
         if(that instanceof Board t) {
             return this.ranks.equals(t.ranks);
         }
         return false;
-    }
-
-    static Set<Location> getKingPossibleMoves(Location current) {
-        final Set<Location> locations = new HashSet<>();
-        final int[] validSteps={-1, 0, 1};
-        for(int i=0; i < validSteps.length; ++i) {
-            for (int j = 0; j < validSteps.length; ++j) {
-                final var optionalAfter = current.move(validSteps[i], validSteps[j]);
-                if(optionalAfter.isEmpty()) continue;
-                locations.add(optionalAfter.get());
-            }
-        }
-        return locations;
     }
 
 }

@@ -86,17 +86,17 @@ public class StudentTest {
     }
     @Test
     void create() {
-        assertEquals(defaultName, student.getName());
+        assertEquals(defaultName, student.getFullName());
 
         final String name1 = "Jane Doe";
         Student student1 = new Student(name1);
-        assertEquals(name1, student1.getName());
+        assertEquals(name1, student1.getFullName());
 
         final String name2 = "Joe Blown";
         Student student2 = new Student(name2);
-        assertEquals(name2, student2.getName());
+        assertEquals(name2, student2.getFullName());
 
-        assertEquals(name1, student1.getName());
+        assertEquals(name1, student1.getFullName());
     }
     @Test
     void studentStatus() {
@@ -114,7 +114,7 @@ public class StudentTest {
 
         student.addCredits(5);
         assertEquals(12, student.getCredits());
-        assertEquals(Student.CREDITS_REQUIRED_FOR_FULLTIME, student.getCredits());
+        assertEquals(Student.CREDITS_REQUIRED_FOR_FULL_TIME, student.getCredits());
         assertTrue(student.isFullTime());
     }
     @Test
@@ -126,6 +126,38 @@ public class StudentTest {
         assertFalse(student.isInState());
         student.setState("co");
         assertTrue(student.isInState());
+    }
+
+    /**
+     * Lesson 7. Legacy Elements. split full name into first, middle and last name
+     * at page 232.
+     */
+    @Test
+    void splitNames(){
+        record Name(String full, String first, String middle, String last){}
+        final Name[] names = {
+            new Name("Jane Joe", "Jane", "", "Joe"),
+            new Name("Blow", "", "", "Blow"),
+            new Name("Raymond Douglas Davies", "Raymond", "Douglas", "Davies"),
+            // TODO: 1 names with 0 elements?
+            // TODO: 2 names with 3+ elements?
+        };
+        for(final var name : names){
+            final var student = new Student(name.full);
+            assertEquals(name.first, student.getFirstName());
+            assertEquals(name.middle, student.getMiddleName());
+            assertEquals(name.last, student.getLastName());
+        }
+
+    }
+    @Test
+    void charges(){
+        int[] charges = {500, 200, 399};
+        for (int charge : charges){
+            student.addCharge(charge);
+        }
+        assertEquals(1099, student.totalCharges());
+
     }
 }
 /*

@@ -1,0 +1,185 @@
+:hardbreaks:
+:toc:
+:sourceDir: _sourceCode
+
+== Lesson 1
+. Create a class to represent a pawn and PawnTest.
+. Create a test method named testCreate.
+. Ask the pawn for its color, default is string "white"
+. create a second pawn with color "black". Assert the color is "black".
+. In testCreate, create constants for the Strings "white" and "black".
+
+== Lesson 2
+. In TestPawn create a pawn without a color.
+. Make the constants for the two colors static and move them onto the
+Pawn class
+
+. Define a Board class. starts with zero pieces on it.
+. Board,
+* add pawn to board, with 2 colors.
+* assert pieces count
+* get a list of pieces from board.
+. Write Javadoc
+. Move all to package `chess`.
+. Move Pawn and PawnTest to package `pieces`
+. Board: only Pawn could be added. adding `new Integer(7)` results in compiler error.
+. create test suite.
+. use `setUp` method if appropriate in Test.
+
+== Lesson 3
+. others, CharacterTest: isWhiteSpace, isJavaIdentifiers
+. `pieces` Pawn printable representation: 'P' for black, 'p' for white.
+. `Board`, when a client creates a Board object, it should be already initialized.
+* numberOfPieces == 16
+. `Board`, add an `initialize` method.
+* add 2 ranks: white pawns on second rank; black pawn on seventh rank.
+* use ArrayList<Pawn> to store a rank.
+* test second rank looks like "ppppppppp"; seventh rank looks like "PPPPPPPPP"
+. `Board` assert the board look like at initial setup.
++
+----
+........ // rank 8
+PPPPPPPP
+........
+........
+........
+........
+pppppppp
+........ // rank 1
+----
+
+== Lesson 4
+. Others, create a utility class `util.StringUtil`
+* Add a new method `appendNewLine()`
+* It has a constant NEW_LINE
+. piece. Transform `Pawn` to generic class `Piece`.
+* Piece has a color and a name(pawn, knight, rook, bishop, queen, king).
+* Piece is a value object. No way to change after construction.
+* Eliminate the ability to create a default piece.
+. `Board` change the BoardTest to reflect the complete board.
++
+[source, java]
+-----
+include::{sourceDir}/BoardTest_4_3.java[]
+-----
+. `Board`, a new Board has 16 black pieces and 16 white pieces.
+. `Piece`, create method `isBlack` and `isWhite`.
+
+== Lesson 5
+. `Piece` create Enum Color.
+. `Piece` introduce an enum for each piece. you will want to separate representation to piece enum.
+. `Piece` create a separate factory method on `Piece` for each color/piece combination.
+. `Board` add method `int getNumberOfPiece(Piece piece)`. Below board should have 3 black pawns. . Calculate the count on demand.
++
+----
+. K R . . . . .
+P . P B . . . .
+. P . . Q . . .
+. . . . . . . .
+. . . . . n q .
+. . . . . p . .
+. . . . . . p .
+. . . . r k . .
+----
+
+. `Board`
+* add method `Piece getPiece(Location location)`
+* "a8" is a black rook; "e1" is a white king.
++
+----
+R N B Q K B N R 8 (rank 8)
+P P P P P P P P 7
+. . . . . . . . 6
+. . . . . . . . 5
+. . . . . . . . 4
+. . . . . . . . 3
+p p p p p p p p 2
+r n b q k b n r 1 (rank 1)
+a b c d e f
+----
+* assert a new Board object contains on pieces.
+. `Board` add method `void put(Piece piece, Location location)`.
++
+----
+. . . . . . . . 8 (rank 8)
+. . . . . . . . 7
+. K . . . . . . 6
+. R . . . . . . 5
+. . k . . . . . 4
+. . . . . . . . 3
+. . . . . . . . 2
+. . . . . . . . 1 (rank 1)
+a b c d e f g h
+----
+. `Board` add method `double getStrength(Color color)`
+* queen is 9; rook is 5; bishop is 3; 2.5 is knight
+* If a file has more than 1 pawn, each is 0.5; otherwise 1.
+* This board black has a strength of 20, and white has 19.5.
++
+----
+. K R . . . . . 8
+P . P B . . . . 7
+. P . . Q . . . 6
+. . . . . . . . 5
+. . . . . n q . 4
+. . . . . p . p 3
+. . . . . p p . 2
+. . . . r k . . 1
+a b c d e f g h
+----
+
+. As you loop though all pieces on the board, assign strength to each piece.
+* add method `List<Piece> getPiecesWithStrengthSorted(Color color)`, which returns a collection from the highest value piece to the lowest.
+. Examine any opportunity to create an interface. No introduce an interface without need.
++
+[quote, Agile Java]
+____
+1. No duplication
+2. fewest classes, fewest methods.
+____
+. Prefer interface rather than concrete implementation wherever possible. like return an ArrayList<> -> List<>
+
+== Lesson 6
+. `Board` calculate strength based on piece type and position. use `switch` instead of `if`.
+. `Board` use Map<Piece.Type, Double> instead of `switch`.
+. `Board` use lazy initialization to preload of map.
+. move the point values for the pieces into `Piece` type enumeration. use a method on enumeration to get the point value.
+. `Piece` move character representation for a piece to `Piece.Type` enum.
+* Code in Board will still need to manage uppercase character for black piece.
+. `Board` implement various moves that a king can make. (now ignore neighboring pieces.)
+. `Board` Break Board into 2 classes
+* `Game`, the logic of a chess game.
+* `Board`, a simple data structure that store pieces, and understands the grid layout of the board.
+* move `put(Piece)` method from `Board` to `Game`
+. `Piece` `Queen` can move in a straight line, add method `getPossibleMoves`.
+* implement this `Queen` 's moving in `Piece`.
+* Maybe it has an `if` to determine whether it's a `King` or `Queen`.
+* Maybe involve _recursion_.
+. move `getPossibleMoves` to `Piece` class.
+. `Piece`, create hierarchy, `King`, `Queen`...as subtypes.
+* create `King` `Queen` to extend `Piece`
+* move tests from PieceTest to KingTest, QueenTest.
+* create subclasses for remaining pieces.
+. `Piece`, eliminate Type enum
+* test piece type by `piece.getClass()`
++
+ if(piece.getClass().equals(Queen.class))
++
+* move code like `if(piece.getClass().equals(Queen.class)) into appropriate class.
+
+== Lesson 7
+. 7-5 Modify Board to use a 2-dimensional array as its underlying data structure.
+
+Difficulty:: client code(Game & Pawn) uses the implementation specifics of the board. So it needs to modify the client code to loop through the ranks and files of the 2-dimensional array.
+
+Solution less than ideal::
+Design public interface for Board class.
+
+Solution alternative::
+Dynamically convert 2-dimensional array to a List of List of Piece each time a client wanted to iterate through it.
+
+////
++
+----
+----
+////

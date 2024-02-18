@@ -1,0 +1,35 @@
+@startgantt
+Project starts 2024-3-10
+printscale daily zoom 2
+[Board calculate strength] as [Task1] requires 2 day
+[Move getPoint to Piece] as [Task4] requires 1 days
+[Task1] -> [Task4]
+[Move character representation to Piece] as [Task5] requires 1 day
+[Task4] -> [Task5]
+[Board implement King's move] as [Task6] requires 2 days
+[Task5] -> [Task6]
+'[Task6] starts 2024-3-15
+
+[Break Board into Game and Board] as [Task7] requires 2 days
+[Task7] is 30% completed
+[Task6] -> [Task7]
+
+
+[Move GetPoint to Game] as [Task7.1] requires 1 day
+'[Task7.1] is 0% completed
+[Task7.1] starts at [Task6]'s end
+
+[Game Queen's move] as [Task8] requires 2 days
+[Task8] is 0% completed
+[Task7] -> [Task8]
+
+[Move gePossibleMoves to Piece] as [Task9] requires 2 day
+[Task9] is 0% completed
+[Task8] -> [Task9]
+[Piece create hierarchy] as [Task10] requires 2 days
+[Task10] is 0% completed
+[Task9] -> [Task10]
+[Piece eliminate Type enum] as [Task11] requires 2 days
+[Task11] is 0% completed
+[Task10] -> [Task11]
+@endgantt

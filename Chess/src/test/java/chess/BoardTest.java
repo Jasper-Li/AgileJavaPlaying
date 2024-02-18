@@ -3,8 +3,8 @@ package chess;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pieces.Color;
+import pieces.King;
 import pieces.Piece;
-import pieces.Type;
 import util.StringUtil;
 
 import java.util.List;
@@ -14,12 +14,9 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static util.StringUtil.NEW_LINE;
-import static chess.ColumnIndex.*;
-import static chess.RankIndex.*;
-import static chess.Direction.*;
 
 public class BoardTest {
-    private static final String board_5_4 = """
+    public static final String board_5_4 = """
         . K R . . . . . 8
         P . P B . . . . 7
         . P . . Q . . . 6
@@ -51,7 +48,6 @@ public class BoardTest {
         final var board = new Board();
         assertEquals(0, board.countAllPieces());
 
-        Piece.resetPiecesCount(0, 0);
 
         board.initialize();
 
@@ -62,8 +58,6 @@ public class BoardTest {
             board.getRank(Board.BLACK_SECOND_RANK_INDEX_ON_BOARD).toString());
 
         assertEquals(32, board.countAllPieces());
-        assertEquals(16, Piece.getBlackPiecesCount());
-        assertEquals(16, Piece.getWhitePiecesCount());
         assertEquals(new Board(GameTest.initialBoard), board);
     }
     @Test
@@ -116,7 +110,7 @@ public class BoardTest {
 
         );
         pieceCount.forEach((pieceCharacter, count)->{
-            final var piece = new Piece (pieceCharacter);
+            final var piece = Piece.of (pieceCharacter);
             assertEquals(count, board.count(piece));
         });
 
@@ -131,7 +125,7 @@ public class BoardTest {
             "a3", '.'
         );
         locationToPiece.forEach((location, piece)->{
-            assertEquals(new Piece(piece), board.get(new Location(location)));
+            assertEquals(Piece.of(piece), board.get(new Location(location)));
         });
     }
 
@@ -143,10 +137,23 @@ public class BoardTest {
         final var piecesBlack = board.getPieces(Color.BLACK);
         assertEquals(7, piecesBlack.size());
     }
+    private void isSorted(Pieces pieces) {
+        final var size = pieces.size();
+        for (int i = 0; i < size - 1; ++i) {
+            final var piece1 = pieces.get(i);
+            final var piece2 = pieces.get(i + 1);
+            final var strength1 = piece1.getStrength();
+            final var strength2 = piece2.getStrength();
+            assertTrue(
+                strength1 >= strength2,
+                STR."Expect \{strength1} of \{piece1} >=  \{strength2} of \{piece2} on pieces: \{pieces}"
+            );
+        }
+    }
 
     @Test
     void put() {
-        record PlacePieceCheck(Character piece, String location){};
+        record PlacePieceCheck(Character piece, String location){}
         PlacePieceCheck[] checks = {
             new PlacePieceCheck('K', "b6"),
             new PlacePieceCheck('R', "b5"),
@@ -158,7 +165,7 @@ public class BoardTest {
         assertEquals(pieceCount, board.countAllPieces());
         for (var check: checks) {
             final var location = new Location(check.location());
-            board.put(new Piece(check.piece()), location);
+            board.put(Piece.of(check.piece()), location);
             ++pieceCount;
             assertEquals(pieceCount, board.countAllPieces());
             assertEquals(check.piece(), board.get(location).toChar());
@@ -176,42 +183,6 @@ public class BoardTest {
             ........\{NEW_LINE}""";
         assertEquals(boardRepresentation, Printer.print(board));
     }
-    // TODO: check
-    @Test
-    void getStrength() {
-        final var board = new Board(board_5_4);
-
-        final var blackKing = board.get(new Location("b8"));
-        assertEquals(0.0, blackKing.getStrength());
-        final var blackBishop = board.get(new Location("d7"));
-        assertEquals(0.0,blackBishop.getStrength());
-
-        final var blackPoints = 20.0;
-        final var whitePoints = 19.5;
-        assertEquals(whitePoints, board.getStrength(Color.WHITE));
-        assertEquals(blackPoints, board.getStrength(Color.BLACK));
-
-        assertEquals(0.0, blackKing.getStrength());
-        assertEquals(3.0,blackBishop.getStrength());
-
-// TODO: add sorted
-//        isSorted(piecesWhite);
-//        isSorted(piecesBlack);
-    }
-//    private void isSorted(List<Piece> pieces) {
-//        final var size =  pieces.size();
-//        for(int i = 0; i<size-1; ++i) {
-//            final var piece1 = pieces.get(i);
-//            final var piece2 = pieces.get(i+1);
-//            final var strength1 = piece1.getStrength();
-//            final var strength2 = piece2.getStrength();
-//            assertTrue(
-//                strength1 >= strength2,
-//                    STR."Expect \{strength1} of \{piece1} >=  \{strength2} of \{piece2}"
-//            );
-//        }
-//    }
-
     @Test
     void testEquals() {
         record Check(String boardA, String boardB, boolean expected){}
@@ -278,17 +249,31 @@ public class BoardTest {
     } // end of testEquals
 
     @Test
-    void getKingPossibleMoves() {
-        Map<String, Set<String>> checks = Map.of(
-            "e4", Set.of("e3", "e5", "d3", "d4", "d5", "f3", "f4", "f5")
-        );
-        checks.forEach((location, possibleMoveStrings) -> {
-            final Set<Location> possibleMoves = possibleMoveStrings.stream()
+    void getLocations() {
+        record Check(String board, Set<String> locations) {}
+        final Check[] checks = {
+            new Check(
+                """
+                 . . . . . . . . 8
+                 . . . . . . . . 7
+                 . . . . . . . . 6
+                 . . . K K K . . 5
+                 . . . K . K . . 4
+                 . . . K K K . . 3
+                 . . . . . . . . 2
+                 . . . . . . . . 1
+                 a b c d e f g h""",
+                Set.of("e3", "e5", "d3", "d4", "d5", "f3", "f4", "f5")
+            ),
+        };
+        for(final var check : checks) {
+            final Set<Location> locationsExpected = check.locations.stream()
                 .map(Location::new)
                 .collect(Collectors.toSet());
-            assertEquals(possibleMoves, Board.getKingPossibleMoves(new Location("e4")));
-
-        });
+            final var result = new Board(check.board)
+                .getLocations(Piece.of('K'));
+            assertEquals(locationsExpected, result);
+        }
     }
 }
 //    @Test
@@ -542,4 +527,5 @@ public class BoardTest {
 //            }
 //        }
 //
+//    }
 //    }

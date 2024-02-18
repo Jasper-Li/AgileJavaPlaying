@@ -3,7 +3,6 @@ package sis.report;
 import sis.studentinfo.CourseSession;
 import sis.studentinfo.Student;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.StringTemplate.STR;
@@ -22,7 +21,7 @@ class RosterReport {
         buffer.append(ROSTER_REPORT_HEADER);
         List<Student> students = session.getAllStudents();
         for (var student: students) {
-            buffer.append(student.getName())
+            buffer.append(student.getFullName())
                   .append(NEW_LINE);
         }
         buffer.append(ROSTER_REPORT_FOOTER)

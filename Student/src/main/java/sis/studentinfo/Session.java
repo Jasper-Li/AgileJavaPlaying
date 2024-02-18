@@ -2,9 +2,12 @@ package sis.studentinfo;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public abstract class Session implements Comparable<Session> {
+import static java.lang.System.out;
+
+public abstract class Session implements Comparable<Session>, Iterable<Student> {
     private final String department;
     private final String number;
     private int credits;
@@ -60,6 +63,26 @@ public abstract class Session implements Comparable<Session> {
         student.addCredits(this.credits);
         students.add(student);
     }
+
+    public double averageGpaForPartTineStudents() {
+        double sum = 0.0;
+        int count = 0;
+        for(final var student : students){
+            if(!student.isFullTime()) {
+                final var gpa = student.getGpa();
+//                out.println(STR."add gpa: \{gpa}");
+                sum += gpa;
+                ++count;
+            }
+        }
+        return sum/count;
+    }
+
+    @Override
+    public Iterator<Student> iterator() {
+        return students.iterator();
+    }
+
     /**
      * @param credits should be positive.
      */

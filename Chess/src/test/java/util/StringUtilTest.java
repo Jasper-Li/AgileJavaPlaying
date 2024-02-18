@@ -45,7 +45,6 @@ class StringUtilTest {
     void isEqualIgnoreEOL() {
         record Check(String left, String right, boolean expected) {
         }
-        ;
         Check[] checks = {
             new Check(
                 """

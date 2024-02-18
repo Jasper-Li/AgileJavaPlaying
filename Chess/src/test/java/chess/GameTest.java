@@ -1,6 +1,8 @@
 package chess;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pieces.Color;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,13 +17,35 @@ class GameTest {
             p p p p p p p p 2
             r n b q k b n r 1
             a b c d e f g h""";
+    private Game game;
+    @BeforeEach
+    void setUp() {
+        game = new Game();
+    }
 
     @Test
     void initialize() {
-        var game = new Game();
         game.initialize();
         var board = game.getBoard();
         assertEquals(new Board(initialBoard), board);
+    }
 
+    @Test
+    void getStrength() {
+        game.setBoard(new Board(BoardTest.board_5_4));
+        final var board = game.getBoard();
+
+        final var blackKing = board.get(new Location("b8"));
+        assertEquals(0.0, blackKing.getStrength());
+        final var blackBishop = board.get(new Location("d7"));
+        assertEquals(0.0,blackBishop.getStrength());
+
+        final var blackPoints = 20.0;
+        final var whitePoints = 19.5;
+        assertEquals(whitePoints, game.getStrength(Color.WHITE));
+        assertEquals(blackPoints, game.getStrength(Color.BLACK));
+
+        assertEquals(0.0, blackKing.getStrength());
+        assertEquals(3.0,blackBishop.getStrength());
     }
 }

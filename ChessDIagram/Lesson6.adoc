@@ -1,0 +1,54 @@
+:hardbreaks:
+:imagesdir: _images
+:source-highlighter: rouge
+
+.Lesson 6 Main
+[plantuml, lesson6main]
+----
+@startuml
+'skinparam groupInheritance 2
+
+package "pieces" {
+    abstract class Piece{
+        + getPossibleMoves(Location): Set<Location>
+        + getPoint(): double
+    }
+    class BlankPiece extends Piece
+    class King extends Piece
+    class Queen extends Piece
+}
+
+package "chess"{
+    abstract class Index
+    class ColumnIndex extends Index
+    class RankIndex extends Index
+
+    class Pieces
+    Pieces "1" *-- "8" Piece
+    class Rank extends Pieces
+    class Column extends Pieces
+    'Rank ..> ColumnIndex
+    'Column ..> RankIndex
+
+    class Location
+    Location *-- ColumnIndex
+    Location *-- RankIndex
+
+    class Board
+    class Game
+    class Printer
+
+    Board "1" *-- "8" Rank
+    Board *-- Location
+    Game *-- Board
+}
+
+@enduml
+----
+
+// [plantuml, jsontest]
+// ----
+// @startjson
+// include::D:\Download\Adobe Acrobat Reader_ Edit PDF_24.2.0.31328.Beta_Apkpure\manifest.json[]
+// @endjson
+// ----
