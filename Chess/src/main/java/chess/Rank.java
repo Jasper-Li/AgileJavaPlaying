@@ -2,10 +2,15 @@ package chess;
 
 import pieces.Piece;
 
+import java.util.List;
+
 public class Rank extends Pieces {
 
     public Rank() {
         super();
+    }
+    Rank(List<Piece> pieces) {
+        super(pieces);
     }
 
     public Rank(String representation) {

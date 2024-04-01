@@ -10,12 +10,11 @@ import java.util.Map;
 
 public class Column extends Pieces {
 
-    Column(List<Piece> pieces) {
-        this.pieces.clear();
-        this.pieces.addAll(pieces);
-    }
     Column(){
         super();
+    }
+    Column(List<Piece> pieces) {
+        super(pieces);
     }
     public Column(String representation) {
        super(representation);

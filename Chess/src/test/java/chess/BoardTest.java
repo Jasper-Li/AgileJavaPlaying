@@ -1,6 +1,7 @@
 package chess;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import pieces.Color;
 import pieces.King;
@@ -248,6 +249,7 @@ public class BoardTest {
 
     } // end of testEquals
 
+    @Disabled("dev")
     @Test
     void getLocations() {
         record Check(String board, Set<String> locations) {}

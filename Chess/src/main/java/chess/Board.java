@@ -6,18 +6,16 @@ import util.StringUtil;
 
 import java.util.*;
 
+import static java.lang.System.out;
+
 public class Board {
     public static final int GRIDS_COUNT_PER_LINE = 8;
     public static final RankIndex  WHITE_BACK_RANK_INDEX_ON_BOARD = RankIndex.R1;
     public static final RankIndex WHITE_SECOND_RANK_INDEX_ON_BOARD = RankIndex.R2;
     public static final RankIndex BLACK_SECOND_RANK_INDEX_ON_BOARD = RankIndex.R7;
     public static final RankIndex BLACK_BACK_RANK_INDEX_ON_BOARD = RankIndex.R8;
-    private final List<Rank> ranks = new ArrayList<>(GRIDS_COUNT_PER_LINE);
-    public Board() {
-        for (int i = 0; i < GRIDS_COUNT_PER_LINE; ++i) {
-            ranks.add(new Rank());
-        }
-    }
+    private final Piece[][] pieces = new Piece[GRIDS_COUNT_PER_LINE][GRIDS_COUNT_PER_LINE];
+    public Board() {}
 
     public Board(String boardRepresentation){
         set(boardRepresentation);
@@ -29,89 +27,105 @@ public class Board {
             throw new RuntimeException(STR."wrong lines count: \{linesCount} of boardRepresentation:\n\{boardRepresentation}");
         }
         for(int linesIndex = GRIDS_COUNT_PER_LINE - 1; linesIndex >=0; --linesIndex) {
-            if(ranks.size() == GRIDS_COUNT_PER_LINE) {
-                ranks.get(linesIndex).set(lines[linesIndex]);
-            } else {
-                ranks.add(new Rank(lines[linesIndex]));
+            final var newRank = new Pieces(lines[linesIndex]);
+            final var rank = pieces[GRIDS_COUNT_PER_LINE - 1 - linesIndex];
+            for(int i=0; i<GRIDS_COUNT_PER_LINE; ++i) {
+                rank[i] = newRank.get(i);
             }
         }
     }
     public Board initialize() {
-        var rankIndex = RankIndex.R1;
-        for (int i = 0; i < GRIDS_COUNT_PER_LINE; ++i) {
-            final var rank = ranks.get(i);
-            if (rankIndex.equals(RankIndex.R1)) {
-                rank.set("rnbqkbnr");
-            } else if (rankIndex.equals(RankIndex.R2)) {
-                rank.set("pppppppp");
-            } else if (rankIndex.equals(RankIndex.R7)) {
-                rank.set("PPPPPPPP");
-            } else if (rankIndex.equals(RankIndex.R8)) {
-                rank.set("RNBQKBNR");
-            } else {
-                rank.set(Rank.BLANK_REPRESENTATION);
-            }
-            rankIndex = rankIndex.next();
-        }
+        final var initialBoard =
+            """
+            RNBQKBNR
+            PPPPPPPP
+            ........
+            ........
+            ........
+            ........
+            pppppppp
+            rnbqkbnr
+            """;
+        set(initialBoard);
         return this;
     }
     public void initializeBlankBoard() {
-        for(final var rank : ranks){
-            rank.set(Rank.BLANK_REPRESENTATION);
-        }
+        final var blankBoard =
+            """
+            ........
+            ........
+            ........
+            ........
+            ........
+            ........
+            ........
+            ........
+            """;
+        set(blankBoard);
     }
     public int count(Piece piece) {
         int count = 0;
-        for (var rank : ranks) {
-            count += rank.count(piece);
-        }
+        for(int i=0; i<GRIDS_COUNT_PER_LINE; ++i)
+            for(int j=0; j<GRIDS_COUNT_PER_LINE; ++j){
+                if(pieces[i][j].equals(piece)) ++count;
+            }
         return count;
     }
 
     public int countAllPieces() {
         int count = 0;
-        for (var rank : ranks) {
-            count += rank.countValidPieces();
-        }
+        for(int i=0; i<GRIDS_COUNT_PER_LINE; ++i)
+            for(int j=0; j<GRIDS_COUNT_PER_LINE; ++j){
+                final var current = pieces[i][j];
+                if(!(current == null || current.isEmpty())) ++count;
+            }
         return count;
     }
     public Piece get(Location location) {
-        final var column = location.column();
-        final var rank = location.rank();
-        return getRank(rank).get(column);
+        final var column = location.column().getInternalIndex();
+        final var rank = location.rank().getInternalIndex();
+        return pieces[rank][column];
     }
     public Column getColumn(ColumnIndex columnIndex) {
         List<Piece> pieces = new ArrayList<Piece>();
-        for (var rank : ranks) {
-            pieces.add(rank.get(columnIndex));
+        final var columnInternalIndex = columnIndex.getInternalIndex();
+        for(int i = 0; i< GRIDS_COUNT_PER_LINE; ++i) {
+            pieces.add(this.pieces[i][columnInternalIndex]);
         }
         return new Column(pieces);
     }
-    public Rank getRank(RankIndex rank) {
-        return ranks.get(rank.getInternalIndex());
+    public Rank getRank(RankIndex rankIndex) {
+        List<Piece> pieces = Arrays.asList(this.pieces[rankIndex.getInternalIndex()]);
+        return new Rank(pieces);
     }
 
     public Pieces getPieces(Color color){
         var pieces = new Pieces();
-        for (final var rank : ranks)  {
-            final var some = rank.getPieces(color);
-            pieces.addAll(some);
-        }
+        for(int i=0; i<GRIDS_COUNT_PER_LINE; ++i)
+            for(int j=0; j<GRIDS_COUNT_PER_LINE; ++j){
+                final var currentPiece = this.pieces[i][j];
+                if(currentPiece.getColor() == color) {
+                    pieces.add(currentPiece);
+                }
+            }
         pieces.sort();
         return pieces;
     }
 
     public void put(Piece piece, Location location) {
-        final var column = location.column();
-        final var rank = location.rank();
-        getRank(rank).put(column, piece);
+        final var column = location.column().getInternalIndex();
+        final var rank = location.rank().getInternalIndex();
+        pieces[rank][column] = piece;
     }
 
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder();
-        for(var i = ranks.size() - 1; i >=0; --i) {
-            buffer.append(ranks.get(i).toString());
+
+        for(int i=GRIDS_COUNT_PER_LINE - 1; i>=0; --i) {
+            for(int j=0; j<GRIDS_COUNT_PER_LINE; ++j) {
+                buffer.append(pieces[i][j].toString());
+            }
             buffer.append(StringUtil.NEW_LINE);
         }
         return buffer.toString();
@@ -119,8 +133,11 @@ public class Board {
 
     public String toPrettyString() {
         StringBuilder buffer = new StringBuilder();
-        for(var i = ranks.size() - 1; i >=0; --i) {
-            buffer.append(ranks.get(i).toPrettyString());
+        for(int i=GRIDS_COUNT_PER_LINE - 1; i>=0; --i) {
+            for(int j=0; j<GRIDS_COUNT_PER_LINE; ++j) {
+                buffer.append(pieces[i][j].toString());
+                buffer.append(' ');
+            }
             buffer.append(i+1);
             buffer.append(StringUtil.NEW_LINE);
         }
@@ -137,7 +154,15 @@ public class Board {
     @Override
     public boolean equals(Object that){
         if(that instanceof Board t) {
-            return this.ranks.equals(t.ranks);
+            for(int i=GRIDS_COUNT_PER_LINE - 1; i>=0; --i) {
+                for (int j = 0; j < GRIDS_COUNT_PER_LINE; ++j) {
+                    if (!pieces[i][j].equals(t.pieces[i][j])) {
+                        out.println(STR."Not equal at \{i} \{j}, this: \{pieces[i][j]} that: \{t.pieces[i][j]} ");
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
         return false;
     }

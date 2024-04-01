@@ -216,4 +216,15 @@ public class PiecesTest {
             assertEquals(check.prettyString, new Pieces(check.pieces).toPrettyString());
         }
     }
+
+    @Test
+    void iterator() {
+        final var repr = "pppppppp";
+        final var pieces = new Pieces(repr);
+        String output = "";
+        for(var piece : pieces) {
+            output += piece.toString();
+        }
+        assertEquals(repr, output);
+    }
 }

@@ -5,14 +5,19 @@ import pieces.Piece;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import static chess.Board.GRIDS_COUNT_PER_LINE;
 
-public class Pieces {
+public class Pieces implements  Iterable<Piece> {
     public static final String BLANK_REPRESENTATION = "........";
     protected final List<Piece> pieces = new ArrayList<>(GRIDS_COUNT_PER_LINE);
     Pieces() {}
+    Pieces(List<Piece> pieces) {
+        this.pieces.clear();
+        this.pieces.addAll(pieces);
+    }
     Pieces(String representation){
         this();
         set(representation);
@@ -108,5 +113,10 @@ public class Pieces {
     public void sort() {
         Comparator<Piece> comparator = (p1, p2) -> Double.compare(p1.getStrength(), p2.getStrength());
         pieces.sort(comparator.reversed());
+    }
+
+    @Override
+    public Iterator<Piece> iterator() {
+        return pieces.iterator();
     }
 }
