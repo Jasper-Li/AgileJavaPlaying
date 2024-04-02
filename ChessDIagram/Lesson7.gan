@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="Lesson7" company="Li Xinghe" webLink="http://" view-date="2024-03-31" view-index="0" gantt-divider-location="423" resource-divider-location="300" version="3.3.3300" locale="en_US">
+<?xml version="1.0" encoding="UTF-8"?><project name="Lesson7" company="Li Xinghe" webLink="http://" view-date="2024-03-31" view-index="0" gantt-divider-location="762" resource-divider-location="300" version="3.3.3300" locale="en_US">
     <description><![CDATA[<<Agile Java>> Lesson 7 exercises]]></description>
     <view zooming-state="default:2" id="gantt-chart">
-        <field id="tpd15" name="Notes" width="20" order="-1"/>
-        <field id="tpd3" name="Name" width="312" order="0"/>
-        <field id="tpd4" name="Begin date" width="20" order="1"/>
-        <field id="tpd5" name="End date" width="90" order="2"/>
+        <field id="tpd3" name="Name" width="519" order="0"/>
+        <field id="tpd4" name="Begin date" width="80" order="1"/>
+        <field id="tpd5" name="End date" width="162" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
         <option id="filter.completedTasks" value="false"/>
         <option id="filter.dueTodayTasks" value="false"/>
         <option id="filter.overdueTasks" value="false"/>
@@ -38,15 +38,21 @@
             <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
             <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
         </taskproperties>
-        <task id="0" uid="10eca231a35b48419d3f8cebceb80340" name="7-5" meeting="false" start="2024-04-01" duration="1" complete="0" expand="true">
+        <task id="0" uid="10eca231a35b48419d3f8cebceb80340" name="7-5" meeting="false" start="2024-04-01" duration="1" complete="100" thirdDate="2024-04-01" thirdDate-constraint="0" expand="false">
             <depend id="4" type="2" difference="0" hardness="Strong"/>
-            <task id="1" uid="e8caeac31fc347288e34e0756bc8b942" name="2-dimensional array data structure" meeting="false" start="2024-04-01" duration="1" complete="0" thirdDate="2024-04-01" thirdDate-constraint="0" expand="true"/>
-            <task id="2" uid="066cba4202674132bad3ec15fc024530" name="Client code calls Board's interface" meeting="false" start="2024-04-01" duration="1" complete="0" thirdDate="2024-04-01" thirdDate-constraint="0" expand="true"/>
-            <task id="3" uid="2c3b51fe898d4818aa009759c679f14a" name="expose board's underlying data-structure" meeting="false" start="2024-04-01" duration="1" complete="0" expand="true"/>
+            <task id="1" uid="e8caeac31fc347288e34e0756bc8b942" name="2-dimensional array data structure" meeting="false" start="2024-04-01" duration="1" complete="100" thirdDate="2024-04-01" thirdDate-constraint="0" expand="true"/>
+            <task id="2" uid="066cba4202674132bad3ec15fc024530" name="Client code calls Board's interface" meeting="false" start="2024-04-01" duration="1" complete="100" thirdDate="2024-04-01" thirdDate-constraint="0" expand="true">
+                <notes><![CDATA[Only Game calls getColumn()]]></notes>
+            </task>
+            <task id="3" uid="2c3b51fe898d4818aa009759c679f14a" name="expose board's underlying data-structure" meeting="false" start="2024-04-01" duration="1" complete="100" thirdDate="2024-04-01" thirdDate-constraint="0" expand="true"/>
         </task>
-        <task id="4" uid="5a4404acf5054a70850e0b6df7e9f6e8" name="7-6" meeting="false" start="2024-04-02" duration="1" complete="0" thirdDate="2024-04-01" thirdDate-constraint="0" expand="true">
-            <task id="5" uid="58211ee2fcb948aa89d7f94ba4fef6c9" name="board iterate" meeting="false" start="2024-04-02" duration="1" complete="0" expand="true"/>
-            <task id="6" uid="71dda07637b0490091ef8e1ea24b1797" name="board for each -&gt; iterate" meeting="false" start="2024-04-02" duration="1" complete="0" expand="true"/>
+        <task id="4" uid="5a4404acf5054a70850e0b6df7e9f6e8" name="7-6" meeting="false" start="2024-04-02" duration="1" complete="100" thirdDate="2024-04-01" thirdDate-constraint="0" expand="false">
+            <task id="5" uid="58211ee2fcb948aa89d7f94ba4fef6c9" name="board iterate" meeting="false" start="2024-04-02" duration="1" complete="100" thirdDate="2024-04-03" thirdDate-constraint="0" expand="true"/>
+            <task id="6" uid="71dda07637b0490091ef8e1ea24b1797" name="board for each -&gt; iterate" meeting="false" start="2024-04-02" duration="1" complete="100" thirdDate="2024-04-03" thirdDate-constraint="0" expand="true"/>
+        </task>
+        <task id="7" uid="9dea26e546eb41a887cac2344516bf1d" name="Test for getPossibleMoves" meeting="false" start="2024-04-02" duration="1" complete="100" thirdDate="2024-04-01" thirdDate-constraint="0" expand="false">
+            <task id="8" uid="5292e2ff11aa492fb438cac1fb0289f8" name="Board.getLocations(Piece piece)" meeting="false" start="2024-04-02" duration="1" complete="100" thirdDate="2024-04-04" thirdDate-constraint="0" expand="true"/>
+            <task id="9" uid="f5fc09ebe05049dfb35c563b34919d92" name="iterate all valid pieces" meeting="false" start="2024-04-02" duration="1" complete="100" thirdDate="2024-04-04" thirdDate-constraint="0" expand="true"/>
         </task>
     </tasks>
     <resources/>
@@ -54,5 +60,4 @@
     <vacations/>
     <previous/>
     <roles roleset-name="Default"/>
-    <roles roleset-name="SoftwareDevelopment"/>
 </project>

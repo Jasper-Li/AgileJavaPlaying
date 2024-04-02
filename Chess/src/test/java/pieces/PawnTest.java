@@ -23,4 +23,8 @@ class PawnTest extends AbstractPieceTest{
     protected Piece createPiece() {
         return new Pawn(WHITE);
     }
+    @Override
+    protected PossibleMoveTest createPossibleMoveTest() {
+        return new PossibleMoveTest();
+    }
 }

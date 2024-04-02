@@ -24,4 +24,8 @@ class KnightTest extends AbstractPieceTest{
         return new Knight(WHITE);
     }
 
+    @Override
+    protected PossibleMoveTest createPossibleMoveTest() {
+        return new PossibleMoveTest();
+    }
 }

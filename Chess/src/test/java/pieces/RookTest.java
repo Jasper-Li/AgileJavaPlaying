@@ -22,4 +22,8 @@ class RookTest extends AbstractPieceTest{
     protected Piece createPiece() {
         return new Rook(WHITE);
     }
+    @Override
+    protected PossibleMoveTest createPossibleMoveTest() {
+        return new PossibleMoveTest();
+    }
 }

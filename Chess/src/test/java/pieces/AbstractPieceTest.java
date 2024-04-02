@@ -1,6 +1,10 @@
 package pieces;
 
+import chess.Board;
+import chess.Location;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -10,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public abstract class AbstractPieceTest {
     record CreateByNew(Piece piece, Color color, char representation){}
     protected abstract CreateByNew[] createByNew();
+
     @Test
     void createByNewTest() {
         final var pieceCheckers = createByNew();
@@ -43,5 +48,52 @@ public abstract class AbstractPieceTest {
         final var status = p1.compareTo(p2);
         assertThat(status, lessThan(0));
         assertThat(p2.compareTo(p1), greaterThan(0));
+    }
+
+    record CurrentNext(String current, String next){}
+    protected record PossibleMoveTest(char piece, List<CurrentNext> currentNexts){
+        public PossibleMoveTest() {
+            this('.', List.of());
+        }
+    }
+
+/**
+ * Possible format.
+            new CurrentNext(
+                """
+                 . . . . . . . . 8
+                 . . . . . . . . 7
+                 . . . . . . . . 6
+                 . . . . . . . . 5
+                 . . . . . . . . 4
+                 . . . . . . . . 3
+                 . . . . . . . . 2
+                 . . . . . . . . 1""",
+                """
+                 . . . . . . . . 8
+                 . . . . . . . . 7
+                 . . . . . . . . 6
+                 . . . . . . . . 5
+                 . . . . . . . . 4
+                 . . . . . . . . 3
+                 . . . . . . . . 2
+                 . . . . . . . . 1"""
+             )
+*/
+    protected abstract PossibleMoveTest createPossibleMoveTest();
+    @Test
+    void getPossibleMoves() {
+        final PossibleMoveTest possibleMoveTest = createPossibleMoveTest();
+        final var piece = Piece.of(possibleMoveTest.piece);
+        for (final var currentNext : possibleMoveTest.currentNexts) {
+            final var currentBoard = new Board(currentNext.current);
+            final var currentLocations = currentBoard.getLocations(piece);
+            assertEquals(1, currentLocations.size());
+            final Location currentLocation = currentLocations.toArray(new Location[0])[0];
+            final var result = piece.getPossibleMoves(currentLocation);
+
+            final var nextLocationsExpected = new Board(currentNext.next).getLocations(piece);
+            assertEquals(nextLocationsExpected, result);
+        }
     }
 }

@@ -1,5 +1,7 @@
 package pieces;
 
+import java.util.List;
+
 import static pieces.Color.*;
 
 class KingTest extends AbstractPieceTest{
@@ -21,6 +23,72 @@ class KingTest extends AbstractPieceTest{
     @Override
     protected Piece createPiece() {
         return new King(WHITE);
+    }
+
+    @Override
+    protected PossibleMoveTest createPossibleMoveTest() {
+        return new PossibleMoveTest('K', List.of(
+            new CurrentNext(
+                """
+                 . . . . . . . . 8
+                 . . . . . . . . 7
+                 . . . . . . . . 6
+                 . . . . . . . . 5
+                 . . . . K . . . 4
+                 . . . . . . . . 3
+                 . . . . . . . . 2
+                 . . . . . . . . 1""",
+                """
+                 . . . . . . . . 8
+                 . . . . . . . . 7
+                 . . . . . . . . 6
+                 . . . K K K . . 5
+                 . . . K . K . . 4
+                 . . . K K K . . 3
+                 . . . . . . . . 2
+                 . . . . . . . . 1"""
+            ),
+            new CurrentNext(
+                """
+                 K . . . . . . . 8
+                 . . . . . . . . 7
+                 . . . . . . . . 6
+                 . . . . . . . . 5
+                 . . . . . . . . 4
+                 . . . . . . . . 3
+                 . . . . . . . . 2
+                 . . . . . . . . 1""",
+                """
+                 . K . . . . . . 8
+                 K K . . . . . . 7
+                 . . . . . . . . 6
+                 . . . . . . . . 5
+                 . . . . . . . . 4
+                 . . . . . . . . 3
+                 . . . . . . . . 2
+                 . . . . . . . . 1"""
+            ),
+            new CurrentNext(
+                """
+                 . . . . . . . . 8
+                 . . . . . . . . 7
+                 . . . . . . . . 6
+                 . . . . . . . . 5
+                 . . . . . . . . 4
+                 . . . . . . . . 3
+                 . . . . . . . . 2
+                 . . . . . . . K 1""",
+                """
+                 . . . . . . . . 8
+                 . . . . . . . . 7
+                 . . . . . . . . 6
+                 . . . . . . . . 5
+                 . . . . . . . . 4
+                 . . . . . . . . 3
+                 . . . . . . K K 2
+                 . . . . . . K . 1"""
+            )
+        ));
     }
 
 }

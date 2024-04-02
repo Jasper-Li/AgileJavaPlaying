@@ -76,49 +76,6 @@ class PieceTest {
             assertEquals(check.point, Piece.of(check.piece).getPoint());
         }
     }
-    @Test
-    void getPossibleMoves() {
-        record Check(char piece,  Map<String, Set<String>> possibleMoves){}
-        final Check[] checks = {
-            new Check('k', Map.of(
-                "e4", (Set.of("e3", "e5", "d3", "d4", "d5", "f3", "f4", "f5")),
-                "a8", (Set.of("a7", "b7", "b8")),
-                "h1", (Set.of("g1", "g2", "h2"))
-            )),
-            new Check('q', Map.of(
-                "e4" , Set.of(
-                    "a4", "b4", "c4", "d4", "f4", "g4", "h4",
-                    "e1", "e2", "e3", "e5", "e6", "e7", "e8",
-                    "b1", "c2", "d3", "f5", "g6", "h7",
-                    "a8", "b7", "c6", "d5", "f3", "g2", "h1"
-                ),
-                "a1", Set.of(
-                    "b1", "c1", "d1", "e1", "f1", "g1", "h1",
-                    "a2", "a3", "a4", "a5", "a6", "a7", "a8",
-                    "b2", "c3", "d4", "e5", "f6", "g7", "h8"
-                ),
-                "a8", Set.of(
-                    "b8", "c8", "d8", "e8", "f8", "g8", "h8",
-                    "a1", "a2", "a3", "a4", "a5", "a6", "a7",
-                    "b7", "c6", "d5", "e4", "f3", "g2", "h1"
-                )
-            )),
-            new Check('p', Map.of()),
-        };
-
-        for(final var check : checks){
-            final var piece = Piece.of(check.piece);
-
-            check.possibleMoves.forEach((location, possibleMoveStrings) -> {
-                final Set<Location> possibleMoves = possibleMoveStrings.stream()
-                    .map(Location::new)
-                    .collect(Collectors.toSet());
-                final var result = piece.getPossibleMoves(new Location(location));
-                assertEquals(possibleMoves, result,
-                    STR."Check piece \{piece}, location: \{location}");
-            });
-        }
-    }
 
     @Test
     void testEquals2(){

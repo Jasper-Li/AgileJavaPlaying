@@ -24,4 +24,8 @@ class BishopTest extends AbstractPieceTest{
     protected Piece createPiece() {
         return new Bishop(WHITE);
     }
+    @Override
+    protected PossibleMoveTest createPossibleMoveTest() {
+        return new PossibleMoveTest();
+    }
 }

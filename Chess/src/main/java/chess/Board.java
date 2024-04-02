@@ -8,7 +8,7 @@ import java.util.*;
 
 import static java.lang.System.out;
 
-public class Board {
+public class Board implements Iterable<Piece>{
     public static final int GRIDS_COUNT_PER_LINE = 8;
     public static final RankIndex  WHITE_BACK_RANK_INDEX_ON_BOARD = RankIndex.R1;
     public static final RankIndex WHITE_SECOND_RANK_INDEX_ON_BOARD = RankIndex.R2;
@@ -65,20 +65,17 @@ public class Board {
     }
     public int count(Piece piece) {
         int count = 0;
-        for(int i=0; i<GRIDS_COUNT_PER_LINE; ++i)
-            for(int j=0; j<GRIDS_COUNT_PER_LINE; ++j){
-                if(pieces[i][j].equals(piece)) ++count;
-            }
+        for(final var currentPiece : this) {
+            if (piece.equals(currentPiece)) ++count;
+        }
         return count;
     }
 
     public int countAllPieces() {
         int count = 0;
-        for(int i=0; i<GRIDS_COUNT_PER_LINE; ++i)
-            for(int j=0; j<GRIDS_COUNT_PER_LINE; ++j){
-                final var current = pieces[i][j];
-                if(!(current == null || current.isEmpty())) ++count;
-            }
+        for(final var currentPiece : this) {
+            if (!currentPiece.isEmpty()) ++count;
+        }
         return count;
     }
     public Piece get(Location location) {
@@ -101,13 +98,11 @@ public class Board {
 
     public Pieces getPieces(Color color){
         var pieces = new Pieces();
-        for(int i=0; i<GRIDS_COUNT_PER_LINE; ++i)
-            for(int j=0; j<GRIDS_COUNT_PER_LINE; ++j){
-                final var currentPiece = this.pieces[i][j];
-                if(currentPiece.getColor() == color) {
-                    pieces.add(currentPiece);
-                }
+        for(final var currentPiece : this) {
+            if(currentPiece.getColor() ==  color) {
+                pieces.add(currentPiece);
             }
+        }
         pieces.sort();
         return pieces;
     }
@@ -148,6 +143,15 @@ public class Board {
 
     public Set<Location> getLocations(Piece piece) {
         Set<Location> locations = new HashSet<>();
+        for (final var validPieceIterator = new ValidPiecesIterator();
+             validPieceIterator.hasNext();) {
+            final var columnIndex = new ColumnIndex(validPieceIterator.column);
+            final var rankIndex = new RankIndex(validPieceIterator.rank);
+            final var currentPiece = validPieceIterator.next();
+            if(currentPiece.equals(piece)) {
+                locations.add(new Location(columnIndex, rankIndex));
+            }
+        }
         return locations;
     }
 
@@ -157,7 +161,6 @@ public class Board {
             for(int i=GRIDS_COUNT_PER_LINE - 1; i>=0; --i) {
                 for (int j = 0; j < GRIDS_COUNT_PER_LINE; ++j) {
                     if (!pieces[i][j].equals(t.pieces[i][j])) {
-                        out.println(STR."Not equal at \{i} \{j}, this: \{pieces[i][j]} that: \{t.pieces[i][j]} ");
                         return false;
                     }
                 }
@@ -167,4 +170,41 @@ public class Board {
         return false;
     }
 
+    @Override
+    public Iterator<Piece> iterator() {
+        return new ValidPiecesIterator();
+    }
+
+    private class ValidPiecesIterator implements Iterator<Piece> {
+        int rank=0;
+        int column=0;
+
+        @Override
+        public boolean hasNext() {
+            for(; rank < GRIDS_COUNT_PER_LINE; ++rank, column=0) {
+                for(; column < GRIDS_COUNT_PER_LINE; ++ column) {
+                    final var current = pieces[rank][column];
+                    if(current != null && !current.isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public Piece next() {
+            if(!hasNext()) {
+                throw  new NoSuchElementException();
+            }
+            final var current = pieces[rank][column];
+            if(column < GRIDS_COUNT_PER_LINE) {
+                ++column;
+            } else {
+                column = 0;
+                ++rank;
+            }
+            return current;
+        }
+    }
 }
