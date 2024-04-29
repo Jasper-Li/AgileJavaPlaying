@@ -1,9 +1,14 @@
 package sis.studentinfo;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static sis.studentinfo.Student.MAX_NAME_PARTS;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 public class StudentTest {
     private static final String defaultName = "James Bang";
@@ -158,6 +163,46 @@ public class StudentTest {
         }
         assertEquals(1099, student.totalCharges());
 
+    }
+
+    @Test
+    void BadlyFormattedName() {
+        Handler testHandler = new TestHandler();
+        Logger logger = Logger.getLogger(Student.class.getName());
+        logger.addHandler(testHandler);
+        final var fullName = "a b c d";
+        try {
+            new Student(fullName);
+            fail("expected exception from 4 part name in constructor.");
+        } catch (StudentNameFormatException e) {
+            var message = STR."Student name '\{fullName}' contains more than \{MAX_NAME_PARTS} parts.";
+//            e.printStackTrace();
+            assertEquals(
+                message,
+                e.getMessage()
+            );
+            assertEquals(message, ((TestHandler)testHandler).getMessage());
+        }
+    }
+
+}
+class TestHandler extends Handler {
+    private LogRecord record=null;
+    @Override
+    public void publish(LogRecord record) {
+        this.record = record;
+    }
+
+    @Override
+    public void flush() {
+    }
+
+    @Override
+    public void close() throws SecurityException {
+    }
+
+    public String getMessage() {
+        return record.getMessage();
     }
 }
 /*

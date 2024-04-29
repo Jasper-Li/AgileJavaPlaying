@@ -3,6 +3,7 @@ package sis.studentinfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,5 +92,16 @@ public abstract class SessionTest {
         List<Student> result = new ArrayList<>();
         for( Student student : session) result.add(student);
         assertEquals(session.getAllStudents(), result);
+    }
+    @Test
+    void sessionUrl() {
+        final String url =  "http://course.langrsoft.com/cmsc300";
+
+        try {
+            session.setUrl(url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        assertEquals(url, session.getUrl().toString());
     }
 }
