@@ -13,6 +13,7 @@ public class Student {
     private final String firstName;
     private final String middleName;
     private final String lastName ;
+    private String id=null;
     private int credits;
     private String state = "";
     private final List<Grade> grades = new ArrayList<Grade>();
@@ -128,5 +129,13 @@ public class Student {
         int sum = 0;
         for(int charge: charges) sum += charge;
         return sum;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

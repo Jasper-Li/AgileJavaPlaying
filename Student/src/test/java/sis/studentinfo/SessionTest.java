@@ -20,9 +20,9 @@ public abstract class SessionTest {
     @BeforeEach
     void setUp() {
         startDate = LocalDate.of(2003, 1, 6);
-        session = createSession("ENGL", "101", startDate);;
+        session = createSession(new Course("ENGL", "101"), startDate);;
     }
-    protected abstract Session createSession(String department, String number, LocalDate date);
+    protected abstract Session createSession(Course course, LocalDate date);
     @Test
     void create() {
         assertEquals("ENGL", session.getDepartment());
@@ -54,9 +54,9 @@ public abstract class SessionTest {
     }
     @Test
     void comparable() {
-        var sessionC = createSession("CMSC", "200", startDate);
-        var sessionE = createSession("ENGL", "101", startDate);
-        var sessionE2 = createSession("ENGL", "201", startDate);
+        var sessionC = createSession(new Course("CMSC", "200"), startDate);
+        var sessionE = createSession(new Course("ENGL", "101"), startDate);
+        var sessionE2 = createSession(new Course("ENGL", "201"), startDate);
         assertEquals(0, session.compareTo(sessionE));
 
         assertTrue(session.compareTo(sessionC) > 0);

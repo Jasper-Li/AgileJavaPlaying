@@ -1,0 +1,25 @@
+@startuml
+package studentinfo{
+class Student{}
+class Course {
+    String department
+    String number
+}
+abstract Session{
+    Course course
+    int credits
+    List<Strudent> students
+    LocalDate startDate
+    URL url
+}
+
+Session -left-> "*" Student
+Session "*" <- Course
+
+class CourseSession extends Session {}
+}
+
+package summer {
+class SummerCourseSession  extends studentinfo.Session {}
+}
+@enduml

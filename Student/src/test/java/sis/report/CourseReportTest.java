@@ -1,6 +1,7 @@
 package sis.report;
 
 import org.junit.jupiter.api.Test;
+import sis.studentinfo.Course;
 import sis.studentinfo.CourseSession;
 
 import java.time.LocalDate;
@@ -15,12 +16,12 @@ public class CourseReportTest {
     void text() {
         var today = LocalDate.now();
         var courseSessions = new ArrayList<CourseSession>(List.of(
-                new CourseSession("ENGL", "101", today),
-                new CourseSession("CZEC", "200", today),
-                new CourseSession("ITAL", "410", today),
-                new CourseSession("CMSC", "101", today),
-                new CourseSession("CZEC", "220", today),
-                new CourseSession("ITAL", "330", today)
+                new CourseSession(new Course("ENGL", "101"), today),
+                new CourseSession(new Course("CZEC", "200"), today),
+                new CourseSession(new Course("ITAL", "410"), today),
+                new CourseSession(new Course("CMSC", "101"), today),
+                new CourseSession(new Course("CZEC", "220"), today),
+                new CourseSession(new Course("ITAL", "330"), today)
         ));
         var textShould =
             "CMSC 101" + NEW_LINE +

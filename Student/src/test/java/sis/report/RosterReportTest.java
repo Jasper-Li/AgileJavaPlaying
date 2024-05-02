@@ -2,6 +2,7 @@ package sis.report;
 
 import org.junit.jupiter.api.Test;
 import sis.report.RosterReport;
+import sis.studentinfo.Course;
 import sis.studentinfo.CourseSession;
 import sis.studentinfo.Student;
 
@@ -14,7 +15,7 @@ public class RosterReportTest {
     @Test
     void getReport() {
         var startDate = LocalDate.of(2003, 1, 6);
-        var session = new CourseSession("ENGL", "101", startDate);
+        var session = new CourseSession(new Course("ENGL", "101"), startDate);
         session.enroll(new Student("A"));
         session.enroll(new Student("B"));
 

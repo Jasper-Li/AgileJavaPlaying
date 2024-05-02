@@ -3,6 +3,7 @@ package sis.studentinfo;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,11 +14,13 @@ public class CourseSessionTest extends SessionTest {
     void count() {
         final var initialCount = 1;
         CourseSession.resetCount(initialCount);
-        new CourseSession("ENGL", "101", startDate);
+        Supplier<CourseSession> newCourseSesstion = () -> new CourseSession(new Course("ENGL", "101"), startDate);
+
+        newCourseSesstion.get();
         assertEquals(initialCount + 1 , CourseSession.getCount());
-        new CourseSession("ENGL", "101", startDate);
+        newCourseSesstion.get();
         assertEquals(initialCount + 2, CourseSession.getCount());
-        new CourseSession("ENGL", "101", startDate);
+        newCourseSesstion.get();
         assertEquals(initialCount + 3, CourseSession.getCount());
     }
     @Test
@@ -33,7 +36,7 @@ public class CourseSessionTest extends SessionTest {
     }
 
     @Override
-    protected Session createSession(String department, String number, LocalDate date) {
-        return new CourseSession(department, number, date);
+    protected Session createSession(Course course, LocalDate date) {
+        return new CourseSession(course, date);
     }
 }

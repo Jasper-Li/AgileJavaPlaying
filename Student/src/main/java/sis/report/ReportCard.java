@@ -13,7 +13,7 @@ public class ReportCard {
     public static final String F_MSG = "Loser";
     EnumMap<Grade, String> messages = null;
 
-    String getMessage(Grade grade) {
+    public EnumMap<Grade, String> getMessages() {
         if(messages == null) {
             messages = new EnumMap<>(Map.of(
                     Grade.A, A_MSG,
@@ -23,6 +23,10 @@ public class ReportCard {
                     Grade.F, F_MSG
             ));
         }
-        return messages.get(grade);
+        return messages;
+
+    }
+    String getMessage(Grade grade) {
+        return getMessages().get(grade);
     }
 }

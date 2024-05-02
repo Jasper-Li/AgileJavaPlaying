@@ -8,5 +8,26 @@ interface GradingStrategy {
 
 class GradingStrategyRegular extends GradingStrategyBasic implements  GradingStrategy
 class GradingStrategyHonor extends GradingStrategyBasic implements  GradingStrategy
+@enduml
 
+@startuml
+package studentinfo{
+class Student{}
+abstract Session{
+    String department
+    String number
+    int credits
+    List<Strudent> students
+    LocalDate startDate
+    URL url
+}
+
+Session -> "*" Student
+
+class CourseSession extends Session {}
+}
+
+package summer {
+class SummerCourseSession  extends studentinfo.Session {}
+}
 @enduml

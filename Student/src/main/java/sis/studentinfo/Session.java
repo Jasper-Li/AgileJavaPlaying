@@ -10,36 +10,35 @@ import java.util.List;
 import static java.lang.System.out;
 
 public abstract class Session implements Comparable<Session>, Iterable<Student> {
-    private final String department;
-    private final String number;
+    private final Course course;
     private int credits;
     private final List<Student> students = new ArrayList<Student>();
     private final LocalDate startDate;
 
     private URL url;
 
-    public Session(String department, String number, LocalDate startDate) {
-        this.department = department;
-        this.number = number;
+    public Session(Course course, LocalDate startDate) {
+        this.course = course;
         this.startDate = startDate;
     }
     public void setCredits(int credits) {
         this.credits = credits;
     }
 
+    // TODO: use course.
     @Override
     public int compareTo(Session o) {
-        var result = department.compareTo(o.department);
+        var result = getDepartment().compareTo(o.getDepartment());
         if (result != 0) return result;
-        return number.compareTo(o.number);
+        return getNumber().compareTo(o.getNumber());
     }
 
     public String getDepartment() {
-        return department;
+        return course.getDepartment();
     }
 
     public String getNumber() {
-        return number;
+        return course.getNumber();
     }
     protected LocalDate getStartDate() {
         return startDate;

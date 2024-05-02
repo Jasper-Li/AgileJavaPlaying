@@ -11,8 +11,8 @@ public class CourseSession extends Session{
     // auto clean start
     private  static int count;
 
-    public CourseSession(String department, String number, LocalDate startDate) {
-        super(department, number, startDate);
+    public CourseSession(Course course, LocalDate startDate) {
+        super(course, startDate);
         ++CourseSession.count;
     }
 
