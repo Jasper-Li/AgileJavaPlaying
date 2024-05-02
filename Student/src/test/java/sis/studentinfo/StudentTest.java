@@ -185,6 +185,26 @@ public class StudentTest {
         }
     }
 
+    @Test
+    void flags() {
+        student.set(
+            Student.Flag.ON_CAMPUS,
+            Student.Flag.TAX_EXEMPT,
+            Student.Flag.MINOR
+        );
+        assertTrue(student.isOn(Student.Flag.ON_CAMPUS));
+        assertTrue(student.isOn(Student.Flag.TAX_EXEMPT));
+        assertTrue(student.isOn(Student.Flag.MINOR));
+        assertFalse(student.isOn(Student.Flag.TROUBLEMAKER));
+
+        assertFalse(student.isOff(Student.Flag.ON_CAMPUS));
+
+        student.unset(Student.Flag.ON_CAMPUS);
+        assertTrue(student.isOff(Student.Flag.ON_CAMPUS));
+        assertTrue(student.isOn(Student.Flag.TAX_EXEMPT));
+        assertTrue(student.isOn(Student.Flag.MINOR));
+        assertTrue(student.isOff(Student.Flag.TROUBLEMAKER));
+    }
 }
 class TestHandler extends Handler {
     private LogRecord record=null;

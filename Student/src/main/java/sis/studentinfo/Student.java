@@ -2,6 +2,7 @@ package sis.studentinfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -22,6 +23,7 @@ public class Student {
     public final static int MAX_NAME_PARTS = 3;
     private final static Logger logger = Logger.getLogger(Student.class.getName());
 
+    private BitSet flags = new BitSet(Flag.values().length);
     public Student(String fullName) {
         this.fullName = fullName;
         List<String> names = split(fullName);
@@ -137,5 +139,39 @@ public class Student {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void set(Flag... flags){
+        for (var flag: flags) {
+            this.flags.set(flag.getValue());
+        }
+    }
+
+    public boolean isOn(Flag flag) {
+        return this.flags.get(flag.getValue());
+    }
+
+    public boolean isOff(Flag flag) {
+        return !isOn(flag);
+    }
+
+    public void unset(Flag flag) {
+        flags.clear(flag.getValue());
+    }
+
+    public enum Flag {
+        ON_CAMPUS(0),
+        TAX_EXEMPT(1),
+        MINOR(2),
+        TROUBLEMAKER(3),
+        ;
+
+        private int value;
+        Flag(int value) {
+            this.value = value;
+        }
+        public int getValue() {
+            return value;
+        }
     }
 }
