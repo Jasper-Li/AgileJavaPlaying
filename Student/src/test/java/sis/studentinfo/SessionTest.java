@@ -3,6 +3,7 @@ package sis.studentinfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public abstract class SessionTest {
     }
 
     @Test
-    void enrollStudent() {
+    void enrollStudent() throws IOException {
         final var sessionCredits = 3;
         session.setCredits(sessionCredits);
 

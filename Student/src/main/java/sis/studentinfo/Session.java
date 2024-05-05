@@ -1,5 +1,9 @@
 package sis.studentinfo;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -9,10 +13,10 @@ import java.util.List;
 
 import static java.lang.System.out;
 
-public abstract class Session implements Comparable<Session>, Iterable<Student> {
+public abstract class Session implements Comparable<Session>, Iterable<Student>, Serializable {
     private final Course course;
     private int credits;
-    private final List<Student> students = new ArrayList<Student>();
+    private transient List<Student> students = new ArrayList<Student>();
     private final LocalDate startDate;
 
     private URL url;
@@ -96,5 +100,31 @@ public abstract class Session implements Comparable<Session>, Iterable<Student> 
 
     public void setUrl(String url) throws MalformedURLException {
         this.url = new URL(url);
+    }
+
+    public int getCredits() {
+        return credits;
+    }
+
+    private void writeObject(ObjectOutputStream output) throws IOException {
+        output.defaultWriteObject();
+        output.writeInt(students.size());
+        for(var student : students) {
+            output.writeUTF(student.getFullName());
+        }
+    }
+    private void readObject(ObjectInputStream input) throws IOException, ClassNotFoundException {
+        input.defaultReadObject();
+        int size = input.readInt();
+        students = new ArrayList<>(size);
+        for(int i=0; i<size; ++i) {
+            String fullName = input.readUTF();
+            var student =fakeFindByFullName(fullName);
+            students.add(student);
+        }
+    }
+    private static Student fakeFindByFullName(String fullName) {
+        return new Student(fullName);
+
     }
 }

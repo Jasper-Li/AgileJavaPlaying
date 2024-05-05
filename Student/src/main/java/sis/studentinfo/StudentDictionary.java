@@ -1,16 +1,37 @@
 package sis.studentinfo;
 
-import java.util.HashMap;
-import java.util.Map;
+import sis.db.DataBase;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class StudentDictionary {
-    Map<String, Student> map = new HashMap<>();
+    private DataBase db;
 
-    public void add(Student student) {
-        map.put(student.getId(), student);
+    public StudentDictionary(String filenameBase) throws IOException {
+        db = new DataBase(filenameBase);
     }
 
-    public Student findById(String id) {
-        return map.get(id);
+    public void add(Student student) throws IOException {
+        db.add(student.getId(), student);
+    }
+    int size() {
+        return db.count();
+    }
+
+    public Student findById(String id) throws IOException {
+        return (Student)db.find(id);
+    }
+
+    public void remove() throws IOException {
+        db.remove();
+    }
+
+    public boolean fileExists() {
+        return db.fileExists();
+    }
+
+    public void close() throws IOException {
+        db.close();
     }
 }

@@ -3,30 +3,41 @@ package sis.report;
 import sis.studentinfo.CourseSession;
 import sis.studentinfo.Student;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 import static java.lang.StringTemplate.STR;
+import static java.util.FormatProcessor.FMT;
 
 class RosterReport {
     public static final String NEW_LINE = System.getProperty("line.separator");
     public static final String ROSTER_REPORT_HEADER = STR."Student\{NEW_LINE}----\{NEW_LINE}";
-    public static final String ROSTER_REPORT_FOOTER = STR."\{NEW_LINE}# student = ";
+    public static final String ROSTER_REPORT_FOOTER = STR."\{NEW_LINE}# students = ";
     private CourseSession session;
+    private Writer writer;
     public RosterReport(CourseSession session) {
         this.session = session;
     }
 
-    String getReport() {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append(ROSTER_REPORT_HEADER);
-        List<Student> students = session.getAllStudents();
-        for (var student: students) {
-            buffer.append(student.getFullName())
-                  .append(NEW_LINE);
+
+    public void writeReport(Writer writer) throws IOException {
+        this.writer = writer;
+        writer.write(ROSTER_REPORT_HEADER);
+        for(var student: session.getAllStudents()) {
+            writer.write(FMT."\{student.getFullName()}%n");
         }
-        buffer.append(ROSTER_REPORT_FOOTER)
-            .append(students.size())
-            .append(NEW_LINE);
-        return buffer.toString();
+        writer.write(FMT."\{ROSTER_REPORT_FOOTER}\{session.getAllStudents().size()}%n");
+    }
+
+    public void writeReport(String filename) throws IOException {
+        Writer writer = new BufferedWriter(new FileWriter(filename));
+        try {
+            writeReport(writer);
+        } finally {
+            writer.close();
+        }
     }
 }
