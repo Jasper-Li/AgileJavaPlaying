@@ -17,14 +17,12 @@ class RosterReport {
     public static final String ROSTER_REPORT_HEADER = STR."Student\{NEW_LINE}----\{NEW_LINE}";
     public static final String ROSTER_REPORT_FOOTER = STR."\{NEW_LINE}# students = ";
     private CourseSession session;
-    private Writer writer;
     public RosterReport(CourseSession session) {
         this.session = session;
     }
 
 
     public void writeReport(Writer writer) throws IOException {
-        this.writer = writer;
         writer.write(ROSTER_REPORT_HEADER);
         for(var student: session.getAllStudents()) {
             writer.write(FMT."\{student.getFullName()}%n");
